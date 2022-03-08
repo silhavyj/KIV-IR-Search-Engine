@@ -1,8 +1,18 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.query.parser;
 
+import cz.zcu.kiv.ir.silhavyj.searchengine.index.Document;
+import cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex;
+import cz.zcu.kiv.ir.silhavyj.searchengine.index.SearchOperations;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
+
+import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer.QUERY_SURROUNDING_CHARACTER;
+import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType.*;
 
 public class QueryParser implements IQueryParser {
 
@@ -10,9 +20,13 @@ public class QueryParser implements IQueryParser {
 
     private QueryLexerToken currentToken;
     private String errorMessage;
+    private Stack<Document> operands;
+    private QueryLexerTokenType clauseOperator;
+    private IIndex index;
 
     public QueryParser(IQueryLexer lexer) {
         this.lexer = lexer;
+        operands = new Stack<>();
         errorMessage = "";
     }
 
@@ -44,7 +58,7 @@ public class QueryParser implements IQueryParser {
         if (!nextQueryToken()) {
             return false;
         }
-        if (currentToken.getType() != QueryLexerTokenType.LEFT_PARENTHESES) {
+        if (currentToken.getType() != LEFT_PARENTHESES) {
             errorMessage = "Missing (";
             return false;
         }
@@ -52,7 +66,7 @@ public class QueryParser implements IQueryParser {
     }
 
     private boolean parseEndOfExpression() {
-        if (currentToken.getType() != QueryLexerTokenType.RIGHT_PARENTHESES) {
+        if (currentToken.getType() != RIGHT_PARENTHESES) {
             errorMessage = "Missing )";
             return false;
         }
@@ -84,7 +98,7 @@ public class QueryParser implements IQueryParser {
             if (!processExpression()) {
                 return false;
             }
-            if (currentToken.getType() == QueryLexerTokenType.COMMA) {
+            if (currentToken.getType() == COMMA) {
                 if (!nextQueryToken()) {
                     return false;
                 }
@@ -107,7 +121,7 @@ public class QueryParser implements IQueryParser {
             if (!nextQueryToken()) {
                 return false;
             }
-            if (currentToken.getType() != QueryLexerTokenType.PERCENTAGE) {
+            if (currentToken.getType() != PERCENTAGE) {
                 errorMessage = "Missing starting symbol";
                 return false;
             }
@@ -117,7 +131,7 @@ public class QueryParser implements IQueryParser {
             if (!processExpression()) {
                 return false;
             }
-            if (currentToken.getType() != QueryLexerTokenType.PERCENTAGE) {
+            if (currentToken.getType() != PERCENTAGE) {
                 errorMessage = "Missing trailing symbol";
                 return false;
             }
@@ -130,5 +144,81 @@ public class QueryParser implements IQueryParser {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Document search(final IIndex index, String query) throws IllegalArgumentException {
+        this.index = index;
+        query = QUERY_SURROUNDING_CHARACTER + query + QUERY_SURROUNDING_CHARACTER;
+        if (!isValidQuery(query)) {
+            throw new IllegalArgumentException("Query syntax error");
+        }
+
+        String term;
+        QueryLexerToken lexerToken;
+        final Stack<QueryParserToken> stack = new Stack<>();
+
+        lexer.resetToFirst();
+        while (lexer.hasNextToken()) {
+            lexerToken = lexer.getNextToken();
+            switch (lexerToken.getType()) {
+                case AND_OPERATOR:
+                case OR_OPERATOR:
+                case NOT_OPERATOR:
+                case LEFT_PARENTHESES:
+                    stack.push(new QueryParserToken(lexerToken.getType(), null, null));
+                    break;
+                case IDENTIFIER:
+                    term = lexerToken.getValue();
+                    stack.push(new QueryParserToken(IDENTIFIER, index.getDocuments(term), term));
+                    break;
+                case RIGHT_PARENTHESES:
+                    operands.empty();
+                    final Set<String> seenOperands = new HashSet<>();
+                    QueryParserToken stackTop;
+
+                    while (!stack.isEmpty() && stack.peek().getType() != LEFT_PARENTHESES) {
+                        stackTop = stack.pop();
+                        if (!seenOperands.contains(stackTop.getTerm())) {
+                            seenOperands.add(stackTop.getTerm());
+                            operands.add(stackTop.getDocument());
+                        }
+                    }
+                    stack.pop();
+                    clauseOperator = stack.pop().getType();
+                    // TODO set up workers
+                    performOperation();
+                    stack.add(new QueryParserToken(IDENTIFIER, operands.pop(), null));
+                    break;
+            }
+        }
+        if (stack.empty()) {
+            throw new IllegalArgumentException("Result is of the query empty");
+        }
+        return stack.pop().getDocument();
+    }
+
+    // TODO just a temporary method to see if all tests still pass
+    private void performOperation() {
+        Document operand1;
+        Document operand2;
+
+        if (clauseOperator == NOT_OPERATOR) {
+            operand1 = operands.pop();
+            operands.push(SearchOperations.not(operand1, index.getAllDocumentIndexes()));
+            return;
+        }
+        while (operands.size() != 1) {
+            operand1 = operands.pop();
+            operand2 = operands.pop();
+            switch (clauseOperator) {
+                case OR_OPERATOR:
+                    operands.add(SearchOperations.or(operand1, operand2));
+                    break;
+                case AND_OPERATOR:
+                    operands.add(SearchOperations.and(operand1, operand2));
+                    break;
+            }
+        }
     }
 }

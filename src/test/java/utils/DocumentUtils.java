@@ -1,4 +1,4 @@
-package operation;
+package utils;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Document;
 

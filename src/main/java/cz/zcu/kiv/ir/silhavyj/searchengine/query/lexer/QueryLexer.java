@@ -10,7 +10,8 @@ public class QueryLexer implements IQueryLexer {
     private static final char OR_OPERATOR       = '|';
     private static final char AND_OPERATOR      = '&';
     private static final char NOT_OPERATOR      = '!';
-    private static final char PERCENTAGE        = '%';
+
+    public static final char QUERY_SURROUNDING_CHARACTER = '%';
 
     private static final char ESCAPE_CHARACTER  = '\\';
 
@@ -26,7 +27,7 @@ public class QueryLexer implements IQueryLexer {
         specialSymbols.put(OR_OPERATOR,       QueryLexerTokenType.OR_OPERATOR);
         specialSymbols.put(AND_OPERATOR,      QueryLexerTokenType.AND_OPERATOR);
         specialSymbols.put(NOT_OPERATOR,      QueryLexerTokenType.NOT_OPERATOR);
-        specialSymbols.put(PERCENTAGE,        QueryLexerTokenType.PERCENTAGE);
+        specialSymbols.put(QUERY_SURROUNDING_CHARACTER,        QueryLexerTokenType.PERCENTAGE);
     }
 
     private boolean isIdentifierCharacter(char c) {

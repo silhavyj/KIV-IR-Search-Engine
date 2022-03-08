@@ -31,6 +31,10 @@ public class Document {
         this.wordCount += 1;
     }
 
+    public boolean isUninitialized() {
+        return index == UNINITIALIZED;
+    }
+
     public int getIndex() {
         return index;
     }

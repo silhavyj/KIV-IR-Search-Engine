@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
-import static operation.DocumentUtils.createDocumentIndex;
+import static utils.DocumentUtils.createDocumentIndex;
 
 public class NOTSearchTest {
 
