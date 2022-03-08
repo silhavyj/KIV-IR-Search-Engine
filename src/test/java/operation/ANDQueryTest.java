@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
-import static operation.DocumentIndexUtils.createDocumentIndex;
+import static operation.DocumentUtils.createDocumentIndex;
 
 public class ANDQueryTest {
 

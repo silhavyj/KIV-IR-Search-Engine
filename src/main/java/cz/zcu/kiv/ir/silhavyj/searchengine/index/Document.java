@@ -3,8 +3,9 @@ package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 public class Document {
 
     public static final int UNINITIALIZED = -1;
+    public static final String UNDEFINED_PATH = "";
 
-    private int index;
+    private final int index;
     private int wordCount;
     private Document next;
 
@@ -26,8 +27,8 @@ public class Document {
         return wordCount;
     }
 
-    public void setWordCount(int wordCount) {
-        this.wordCount = wordCount;
+    public void increaseWordCount() {
+        this.wordCount += 1;
     }
 
     public int getIndex() {
@@ -44,7 +45,7 @@ public class Document {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || obj instanceof Document == false) {
+        if (!(obj instanceof Document)) {
             return false;
         }
 
@@ -65,7 +66,7 @@ public class Document {
         final StringBuilder stringBuilder = new StringBuilder();
         Document currentDoc = this;
         while (currentDoc != null) {
-            stringBuilder.append(currentDoc.getIndex() + " ");
+            stringBuilder.append(currentDoc.getIndex()).append(" ");
             currentDoc = currentDoc.getNext();
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
