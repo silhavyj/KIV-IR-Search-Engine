@@ -76,7 +76,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                cz.zcu.kiv.ir.silhavyj.searchengine/cz.zcu.kiv.ir.silhavyj.searchengine.HelloApplication
+                                cz.zcu.kiv.ir.silhavyj.searchengine/cz.zcu.kiv.ir.silhavyj.searchengine.Main
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
