@@ -11,6 +11,7 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -21,9 +22,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ResourceBundle;
 
-public class MainController {
+public class MainController implements Initializable {
 
     @FXML
     private MenuBar menuBar;
@@ -46,16 +49,32 @@ public class MainController {
     @FXML
     private TabPane resultsTabPane;
 
-    private static final int MAX_NUMBER_OF_DISPLAYED_SEARCH_RESULT = 5;
+    @FXML
+    private Slider topResultsCountSlider;
+
+    @FXML
+    private Label topResultsCountLabel;
 
     final IPreprocessor englishPreprocessor = new EnglishPreprocessor("stopwords.txt");
     final IIndex index = new Index(englishPreprocessor);
     final IQueryParser queryParser = new QueryParser(new QueryLexer());
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        topResultsCountSlider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == null) {
+                topResultsCountLabel.setText("null");
+                return;
+            }
+            topResultsCountLabel.setText(String.format("(%d)", Math.round(newValue.intValue())));
+        });
+    }
+
     private void disableUserInput(boolean disable) {
         addJSONDocumentMenuItem.setDisable(disable);
         addTXTDocumentMenuItem.setDisable(disable);
         searchBtn.setDisable(disable);
+        queryTextField.setDisable(disable);
     }
 
     private JSONObject getJSONDocument(final Document document) {
@@ -71,6 +90,7 @@ public class MainController {
 
     private void displayResults(Document document, int count) {
         JSONObject data;
+        int totalNumberOfDocument = 0;
         while (document != null && count > 0) {
             data = getJSONDocument(document);
             if (data != null) {
@@ -79,36 +99,56 @@ public class MainController {
                 document = document.getNext();
             }
             count--;
+            totalNumberOfDocument++;
         }
+        while (document != null) {
+            totalNumberOfDocument++;
+            document = document.getNext();
+        }
+        statusLabel.setStyle("-fx-background-color: GREEN");
+        statusLabel.setText("found " + totalNumberOfDocument + " matching documents");
     }
 
     private Tab createResultTab(final JSONObject data, final Document document) {
         Tab tab = new Tab();
         tab.setText(String.valueOf(Paths.get(index.getFilePath(document.getIndex())).getFileName()));
-        tab.setContent(createTabBody(data));
+        tab.setContent(createTabBody(data, document));
         tab.setOnClosed(e -> resultsTabPane.getTabs().remove(tab));
         return tab;
     }
 
-    private VBox createTabBody(final JSONObject document) {
+    private VBox createTabBody(final JSONObject data, final Document document) {
         VBox vBox = new VBox();
         vBox.setSpacing(5);
         vBox.setPadding(new Insets(20, 20, 20, 20));
 
-        if (document.has("author")) {
-            vBox.getChildren().add(createMetadataInfo("Author", (String)document.get("author")));
+        if (data.has("author")) {
+            vBox.getChildren().add(createMetadataInfo("Author", (String)data.get("author")));
         }
-        if (document.has("datetime")) {
-            vBox.getChildren().add(createMetadataInfo("Datetime", (String)document.get("datetime")));
+        if (data.has("datetime")) {
+            vBox.getChildren().add(createMetadataInfo("Datetime", (String)data.get("datetime")));
         }
-        if (document.has("subject")) {
-            vBox.getChildren().add(createMetadataInfo("Subject", (String)document.get("subject")));
+        if (data.has("subject")) {
+            vBox.getChildren().add(createMetadataInfo("Subject", (String)data.get("subject")));
         }
+        if (data.has("url")) {
+            vBox.getChildren().add(createHyperlink((String)data.get("url")));
+        }
+        vBox.getChildren().add(createMetadataInfo("location", index.getFilePath(document.getIndex())));
         vBox.getChildren().add(createSeparator());
-        vBox.getChildren().add(createTitle((String)document.get("title")));
-        vBox.getChildren().add(createTextArea((String)document.get("article")));
+        vBox.getChildren().add(createTitle((String)data.get("title")));
+        vBox.getChildren().add(createTextArea((String)data.get("article")));
 
         return vBox;
+    }
+
+    private HBox createHyperlink(final String url) {
+        HBox hBox = new HBox();
+        hBox.setSpacing(10);
+        Hyperlink hyperlink = new Hyperlink();
+        hyperlink.setText(url);
+        hBox.getChildren().add(hyperlink);
+        return hBox;
     }
 
     private HBox createMetadataInfo(final String key, final String value) {
@@ -175,13 +215,13 @@ public class MainController {
                         processedDocuments++;
                         if (index.index((String)data.get("article"), file.getAbsolutePath())) {
                             progress = (double)processedDocuments / files.size() * 100;
-                            statusLabel.setTextFill(Color.GREEN);
+                            statusLabel.setStyle("-fx-background-color: GREEN");
                             double finalProgress = progress;
                             Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "%)"));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        statusLabel.setTextFill(Color.RED);
+                        statusLabel.setStyle("-fx-background-color: RED");
                         Platform.runLater(() -> statusLabel.setText("Failed to parse document " + file.getName()));
                         break;
                     }
@@ -206,17 +246,15 @@ public class MainController {
         try {
             result = queryParser.search(index, query);
         } catch (Exception e) {
-            statusLabel.setTextFill(Color.RED);
+            statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText(e.getMessage());
             return;
         }
         if (result == null || result.isUninitialized()) {
-            statusLabel.setTextFill(Color.RED);
+            statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText("No results were found");
         } else {
-            statusLabel.setTextFill(Color.GREEN);
-            statusLabel.setText("Search was successful");
-            displayResults(result, MAX_NUMBER_OF_DISPLAYED_SEARCH_RESULT);
+            displayResults(result, (int)topResultsCountSlider.getValue());
         }
     }
 }

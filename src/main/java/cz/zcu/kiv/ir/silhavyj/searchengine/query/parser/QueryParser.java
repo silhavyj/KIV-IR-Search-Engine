@@ -258,6 +258,7 @@ public class QueryParser implements IQueryParser {
                     stack.push(new QueryParserToken(lexerToken.getType(), null, null));
                     break;
                 case IDENTIFIER:
+                    // TODO add spelling correction
                     term = lexerToken.getValue();
                     if (index.getPreprocessor() != null) {
                         term = index.getPreprocessor().preprocess(term);
