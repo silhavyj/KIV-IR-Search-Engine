@@ -272,7 +272,7 @@ public class QueryParser implements IQueryParser {
 
                     while (!stack.isEmpty() && stack.peek().getType() != LEFT_PARENTHESES) {
                         stackTop = stack.pop();
-                        if (!seenOperands.contains(stackTop.getTerm())) {
+                        if (stackTop.getTerm() == null || !seenOperands.contains(stackTop.getTerm())) {
                             seenOperands.add(stackTop.getTerm());
                             operands.add(stackTop.getDocument());
                         }

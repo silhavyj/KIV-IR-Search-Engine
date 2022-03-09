@@ -26,7 +26,7 @@ public class SearchOperations {
     }
 
     public static Document and(Document docs1, Document docs2) {
-        if (docs1 == null || docs2 == null) {
+        if ((docs1 == null || docs2 == null) || (docs1.isUninitialized() && docs2.isUninitialized())) {
             return null;
         }
 
@@ -63,14 +63,24 @@ public class SearchOperations {
         if (docs2 == null) {
             return docs1;
         }
+        if (docs1.isUninitialized()) {
+            return docs2;
+        }
+        if (docs2.isUninitialized()) {
+            return docs1;
+        }
 
-        Document currentDoc;
+        Document currentDoc = null;
         if (docs1.getIndex() < docs2.getIndex()) {
             currentDoc = new Document(docs1.getIndex());
             docs1 = docs1.getNext();
         } else {
             currentDoc = new Document(docs2.getIndex());
             docs2 = docs2.getNext();
+        }
+
+        if (currentDoc == null) {
+            return new Document();
         }
 
         Document result = currentDoc;

@@ -131,12 +131,12 @@ public class MainController implements Initializable {
         if (data.has("subject")) {
             vBox.getChildren().add(createMetadataInfo("Subject", (String)data.get("subject")));
         }
+        vBox.getChildren().add(createMetadataInfo("Location", index.getFilePath(document.getIndex())));
+        vBox.getChildren().add(createSeparator());
+        vBox.getChildren().add(createTitle((String)data.get("title")));
         if (data.has("url")) {
             vBox.getChildren().add(createHyperlink((String)data.get("url")));
         }
-        vBox.getChildren().add(createMetadataInfo("location", index.getFilePath(document.getIndex())));
-        vBox.getChildren().add(createSeparator());
-        vBox.getChildren().add(createTitle((String)data.get("title")));
         vBox.getChildren().add(createTextArea((String)data.get("article")));
 
         return vBox;
@@ -154,8 +154,8 @@ public class MainController implements Initializable {
     private HBox createMetadataInfo(final String key, final String value) {
         HBox hBox = new HBox();
         hBox.setSpacing(10);
-        hBox.getChildren().add(createLabel(key));
-        hBox.getChildren().add(createLabel(value));
+        hBox.getChildren().add(createLabel(key, true));
+        hBox.getChildren().add(createLabel(value, false));
         return hBox;
     }
 
@@ -164,9 +164,12 @@ public class MainController implements Initializable {
         return separator;
     }
 
-    private Label createLabel(final String text) {
+    private Label createLabel(final String text, boolean key) {
         Label label = new Label();
         label.setText(text);
+        if (key) {
+            label.setStyle("-fx-font-weight: bold");
+        }
         return label;
     }
 
@@ -174,8 +177,11 @@ public class MainController implements Initializable {
         HBox hBox = new HBox();
         hBox.setSpacing(10);
         VBox.setMargin(hBox, new Insets(5, 0, 0, 0));
-        hBox.getChildren().add(createLabel("title"));
-        hBox.getChildren().add(createLabel(title));
+
+        final var titleLabel = createLabel(title, true);
+        titleLabel.setStyle("-fx-font-size: 18px");
+
+        hBox.getChildren().add(titleLabel);
         return hBox;
     }
 
@@ -211,10 +217,10 @@ public class MainController implements Initializable {
                     final var content = IOUtils.readFile(file.getAbsolutePath());
 
                     try {
-                        JSONObject data = new JSONObject(content);
                         processedDocuments++;
+                        JSONObject data = new JSONObject(content);
                         if (index.index((String)data.get("article"), file.getAbsolutePath())) {
-                            progress = (double)processedDocuments / files.size() * 100;
+                            progress = (double)processedDocuments / files.size() * 100.0;
                             statusLabel.setStyle("-fx-background-color: GREEN");
                             double finalProgress = progress;
                             Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "%)"));
@@ -252,7 +258,7 @@ public class MainController implements Initializable {
             result = queryParser.search(index, query);
         } catch (Exception e) {
             statusLabel.setStyle("-fx-background-color: RED");
-            statusLabel.setText(e.getMessage());
+            statusLabel.setText(queryParser.getErrorMessage());
             return;
         }
         if (result == null || result.isUninitialized()) {
