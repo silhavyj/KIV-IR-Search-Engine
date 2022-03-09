@@ -30,4 +30,27 @@ public class IOUtils {
         }
         return lines;
     }
+
+    public static String readFile(final String filename) {
+        BufferedReader bufferedReader = null;
+        String line;
+        final StringBuilder stringBuilder = new StringBuilder();
+        try {
+            bufferedReader = new BufferedReader(new FileReader(filename));
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return stringBuilder.toString();
+    }
 }

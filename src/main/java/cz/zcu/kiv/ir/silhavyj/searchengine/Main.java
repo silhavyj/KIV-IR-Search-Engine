@@ -17,6 +17,17 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch();
+
+        // TODO delete
+        /*final IPreprocessor englishPreprocessor = new EnglishPreprocessor("stopwords.txt");
+        final IIndex index = new Index(englishPreprocessor);
+        final IQueryParser queryParser = new QueryParser(new QueryLexer());
+
+        index.index("Hey how's it going? theatres", "a.txt");
+        index.index("I'm not going today", "b.txt");
+
+        final var result = queryParser.search(index, "!(going)");
+        System.out.println(result);*/
     }
 
     @Override

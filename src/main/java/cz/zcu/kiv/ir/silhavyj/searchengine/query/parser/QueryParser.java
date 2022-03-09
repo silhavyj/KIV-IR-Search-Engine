@@ -259,6 +259,9 @@ public class QueryParser implements IQueryParser {
                     break;
                 case IDENTIFIER:
                     term = lexerToken.getValue();
+                    if (index.getPreprocessor() != null) {
+                        term = index.getPreprocessor().preprocess(term);
+                    }
                     stack.push(new QueryParserToken(IDENTIFIER, index.getDocuments(term), term));
                     break;
                 case RIGHT_PARENTHESES:

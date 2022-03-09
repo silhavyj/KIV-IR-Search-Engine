@@ -3,7 +3,6 @@ package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 public class Document {
 
     public static final int UNINITIALIZED = -1;
-    public static final String UNDEFINED_PATH = "";
 
     private final int index;
     private int wordCount;

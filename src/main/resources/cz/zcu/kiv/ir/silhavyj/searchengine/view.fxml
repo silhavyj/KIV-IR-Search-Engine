@@ -14,15 +14,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="464.0" minWidth="725.0" prefHeight="464.0" prefWidth="725.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="464.0" minWidth="725.0" prefHeight="464.0" prefWidth="725.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.ir.silhavyj.searchengine.gui.MainController">
    <top>
       <HBox alignment="CENTER_RIGHT" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar prefHeight="27.0" prefWidth="169.0" HBox.hgrow="ALWAYS">
+            <MenuBar fx:id="menuBar" prefHeight="27.0" prefWidth="169.0" HBox.hgrow="ALWAYS">
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
-                        <MenuItem mnemonicParsing="false" text="Add Document" />
+                        <MenuItem fx:id="addJSONDocumentMenuItem" mnemonicParsing="false" onAction="#addJSONDocument" text="Add JSON Document" />
+                        <MenuItem fx:id="addTXTDocumentMenuItem" mnemonicParsing="false" onAction="#addTXTDocument" text="Add TXT Document" />
                     <MenuItem mnemonicParsing="false" text="Close" />
                   </items>
                 </Menu>
@@ -38,7 +39,7 @@
                   <Font size="14.0" />
                </font>
             </TextField>
-            <Button mnemonicParsing="false" text="Search" />
+            <Button fx:id="searchBtn" mnemonicParsing="false" text="Search" />
          </children>
          <BorderPane.margin>
             <Insets />

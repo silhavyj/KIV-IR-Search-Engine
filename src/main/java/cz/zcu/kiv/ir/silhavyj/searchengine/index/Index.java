@@ -1,20 +1,25 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor;
+
+import java.util.*;
 
 public class Index implements IIndex {
 
     private final Map<String, DocumentList> invertedIndex;
     private final Set<Integer> allDocumentIndexes;
-    private final Map<Integer, String> filePaths;
+    private final Set<String> filePaths;
+    private final Map<Integer, String> indexFilePaths;
+    private final IPreprocessor preprocessor;
+    private int currentIndex;
 
-    public Index() {
+    public Index(final IPreprocessor preprocessor) {
+        this.preprocessor = preprocessor;
         invertedIndex = new HashMap<>();
         allDocumentIndexes = new TreeSet<>();
-        filePaths = new HashMap<>();
+        indexFilePaths = new HashMap<>();
+        filePaths = new HashSet<>();
+        currentIndex = 0;
     }
 
     @Override
@@ -23,8 +28,8 @@ public class Index implements IIndex {
         if (!invertedIndex.containsKey(term)) {
             invertedIndex.put(term, new DocumentList(term));
         }
-        if (!filePaths.containsKey(documentIndex)) {
-            filePaths.put(documentIndex, filePath);
+        if (!indexFilePaths.containsKey(documentIndex)) {
+            indexFilePaths.put(documentIndex, filePath);
         }
         final var documentList = invertedIndex.get(term);
         documentList.add(document);
@@ -50,10 +55,10 @@ public class Index implements IIndex {
 
     @Override
     public String getFilePath(int documentIndex) throws IllegalArgumentException {
-        if (!filePaths.containsKey(documentIndex)) {
+        if (!indexFilePaths.containsKey(documentIndex)) {
             throw new IllegalArgumentException("Document has not been indexed yet");
         }
-        return filePaths.get(documentIndex);
+        return indexFilePaths.get(documentIndex);
     }
 
     @Override
@@ -62,5 +67,21 @@ public class Index implements IIndex {
             return invertedIndex.get(term).getFirst();
         }
         return new Document();
+    }
+
+    @Override
+    public boolean index(final String text, final String filePath) {
+        if (!filePaths.contains(filePath)) {
+            filePaths.add(filePath);
+            preprocessor.tokenize(text).forEach(token -> addDocument(token, currentIndex, filePath));
+            currentIndex++;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public final IPreprocessor getPreprocessor() {
+        return preprocessor;
     }
 }
