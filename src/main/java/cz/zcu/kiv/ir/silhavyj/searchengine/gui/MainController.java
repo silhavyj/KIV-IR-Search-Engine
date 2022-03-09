@@ -88,7 +88,7 @@ public class MainController implements Initializable {
         return null;
     }
 
-    private void displayResults(Document document, int count) {
+    private void displayResults(Document document, int count, long timeOfSearchInMS) {
         JSONObject data;
         int totalNumberOfDocument = 0;
         while (document != null && count > 0) {
@@ -106,7 +106,7 @@ public class MainController implements Initializable {
             document = document.getNext();
         }
         statusLabel.setStyle("-fx-background-color: GREEN");
-        statusLabel.setText("found " + totalNumberOfDocument + " matching documents");
+        statusLabel.setText("found " + totalNumberOfDocument + " matching documents (" + timeOfSearchInMS + "ms)");
     }
 
     private Tab createResultTab(final JSONObject data, final Document document) {
@@ -241,7 +241,12 @@ public class MainController implements Initializable {
     @FXML
     private void search() {
         resultsTabPane.getTabs().clear();
+
+        long start = System.currentTimeMillis();
         final String query = queryTextField.getText();
+        long end = System.currentTimeMillis();
+        long timeOfSearchInMS = end - start;
+
         Document result;
         try {
             result = queryParser.search(index, query);
@@ -254,7 +259,7 @@ public class MainController implements Initializable {
             statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText("No results were found");
         } else {
-            displayResults(result, (int)topResultsCountSlider.getValue());
+            displayResults(result, (int)topResultsCountSlider.getValue(), timeOfSearchInMS);
         }
     }
 }
