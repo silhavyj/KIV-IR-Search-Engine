@@ -55,7 +55,7 @@ public class MainController implements Initializable {
     @FXML
     private Label topResultsCountLabel;
 
-    final IPreprocessor englishPreprocessor = new EnglishPreprocessor("stopwords.txt");
+    final IPreprocessor englishPreprocessor = new EnglishPreprocessor("stopwords-en.txt");
     final IIndex index = new Index(englishPreprocessor);
     final IQueryParser queryParser = new QueryParser(new QueryLexer());
 
