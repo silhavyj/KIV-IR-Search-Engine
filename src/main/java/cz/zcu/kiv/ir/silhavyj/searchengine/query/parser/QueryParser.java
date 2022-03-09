@@ -6,23 +6,25 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.index.SearchOperations;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType;
+import javafx.util.Pair;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer.QUERY_SURROUNDING_CHARACTER;
 import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType.*;
 
 public class QueryParser implements IQueryParser {
 
-    private final IQueryLexer lexer;
+    private static final int NUMBER_OF_WORKERS = 5;
 
+    private final IQueryLexer lexer;
     private QueryLexerToken currentToken;
     private String errorMessage;
-    private Stack<Document> operands;
+    private final Stack<Document> operands;
     private QueryLexerTokenType clauseOperator;
     private IIndex index;
+    private int totalNumberOfOperations;
+    private boolean clauseFinished;
 
     public QueryParser(IQueryLexer lexer) {
         this.lexer = lexer;
@@ -109,6 +111,93 @@ public class QueryParser implements IQueryParser {
         return true;
     }
 
+    private synchronized Pair<Document, Document> getTwoOperands() {
+        if (operands.size() < 2) {
+            return null;
+        }
+        final var operand1 = operands.pop();
+        final var operand2 = operands.pop();
+        return new Pair<>(operand1, operand2);
+    }
+
+    private synchronized void addResultOfOperation(final Document document) {
+        if (document != null) {
+            operands.push(document);
+            totalNumberOfOperations--;
+            if (totalNumberOfOperations == 0) {
+                clauseFinished = true;
+            }
+        }
+    }
+
+    class Worker extends Thread {
+
+        @Override
+        public void run() {
+            Pair<Document, Document> twoOperands;
+            Document result = null;
+
+            while (!clauseFinished) {
+                twoOperands = getTwoOperands();
+                if (twoOperands == null) {
+                    // TODO wait
+                } else {
+                    switch (clauseOperator) {
+                        case OR_OPERATOR:
+                            result = SearchOperations.or(twoOperands.getKey(), twoOperands.getValue());
+                            break;
+                        case AND_OPERATOR:
+                            result = SearchOperations.and(twoOperands.getKey(), twoOperands.getValue());
+                            break;
+                    }
+                    addResultOfOperation(result);
+                }
+            }
+        }
+    }
+
+    private void performOperation() {
+        if (clauseOperator == NOT_OPERATOR) {
+            var operand1 = operands.pop();
+            operands.push(SearchOperations.not(operand1, index.getAllDocumentIndexes()));
+            return;
+        }
+
+        Document result = null;
+        Document operand1;
+        Document operand2;
+        while (operands.size() != 1) {
+            operand1 = operands.pop();
+            operand2 = operands.pop();
+            switch (clauseOperator) {
+                case OR_OPERATOR:
+                    result = SearchOperations.or(operand1, operand2);
+                    break;
+                case AND_OPERATOR:
+                    result = SearchOperations.and(operand1, operand2);
+                    break;
+            }
+            operands.push(result);
+        }
+
+        // TODO
+        /* clauseFinished = false;
+        totalNumberOfOperations = operands.size() - 1;
+
+        LinkedList<Worker> workers = new LinkedList<>();
+        for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
+            workers.add(new Worker());
+            workers.getLast().start();
+        }
+        for (final var worker : workers) {
+            try {
+                worker.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } */
+    }
+
     @Override
     public String getErrorMessage() {
         return errorMessage;
@@ -139,8 +228,8 @@ public class QueryParser implements IQueryParser {
                 errorMessage = "Query has not been fully parsed";
                 return false;
             }
-        } catch (IllegalArgumentException ex) {
-            errorMessage = ex.getMessage();
+        } catch (IllegalArgumentException e) {
+            errorMessage = e.getMessage();
             return false;
         }
         return true;
@@ -186,7 +275,6 @@ public class QueryParser implements IQueryParser {
                     }
                     stack.pop();
                     clauseOperator = stack.pop().getType();
-                    // TODO set up workers
                     performOperation();
                     stack.add(new QueryParserToken(IDENTIFIER, operands.pop(), null));
                     break;
@@ -196,29 +284,5 @@ public class QueryParser implements IQueryParser {
             throw new IllegalArgumentException("Result is of the query empty");
         }
         return stack.pop().getDocument();
-    }
-
-    // TODO just a temporary method to see if all tests still pass
-    private void performOperation() {
-        Document operand1;
-        Document operand2;
-
-        if (clauseOperator == NOT_OPERATOR) {
-            operand1 = operands.pop();
-            operands.push(SearchOperations.not(operand1, index.getAllDocumentIndexes()));
-            return;
-        }
-        while (operands.size() != 1) {
-            operand1 = operands.pop();
-            operand2 = operands.pop();
-            switch (clauseOperator) {
-                case OR_OPERATOR:
-                    operands.add(SearchOperations.or(operand1, operand2));
-                    break;
-                case AND_OPERATOR:
-                    operands.add(SearchOperations.and(operand1, operand2));
-                    break;
-            }
-        }
     }
 }

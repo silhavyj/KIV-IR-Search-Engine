@@ -35,4 +35,9 @@ public class InvalidQueryTest {
     public void testQuery_04() {
         assertFalse(queryParser.isValidQuery("%|(&(a,b)%"));
     }
+
+    @Test
+    public void testQuery_05() {
+        assertFalse(queryParser.isValidQuery("%!(hey,hello,hi)%"));
+    }
 }
