@@ -1,6 +1,7 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -27,6 +28,10 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setMinHeight(WINDOW_MIN_HEIGHT);
         stage.setMinWidth(WINDOW_MIN_WIDTH);
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
         stage.show();
     }
 }
