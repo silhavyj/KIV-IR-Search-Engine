@@ -1,6 +1,8 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.*;
 
@@ -11,7 +13,9 @@ public class Index implements IIndex {
     private final Set<String> filePaths;
     private final Map<Integer, String> indexFilePaths;
     private final IPreprocessor preprocessor;
-    private int currentIndex;
+    private final IntegerProperty documentCount;
+    private final IntegerProperty termCount;
+    private final IntegerProperty tokenCount;
 
     public Index(final IPreprocessor preprocessor) {
         this.preprocessor = preprocessor;
@@ -19,7 +23,51 @@ public class Index implements IIndex {
         allDocumentIndexes = new TreeSet<>();
         indexFilePaths = new HashMap<>();
         filePaths = new HashSet<>();
-        currentIndex = 0;
+        documentCount = new SimpleIntegerProperty(0);
+        termCount = new SimpleIntegerProperty(0);
+        tokenCount = new SimpleIntegerProperty(0);
+    }
+
+    @Override
+    public int getDocumentCount() {
+        return documentCount.get();
+    }
+
+    private void setDocumentCount(int value) {
+        documentCount.set(value);
+    }
+
+    @Override
+    public IntegerProperty documentCountProperty() {
+        return documentCount;
+    }
+
+    @Override
+    public int getTermCount() {
+        return termCount.get();
+    }
+
+    private void setTermCount(int value) {
+        termCount.set(value);
+    }
+
+    @Override
+    public IntegerProperty termCountProperty() {
+        return termCount;
+    }
+
+    @Override
+    public int getTokenCount() {
+        return tokenCount.get();
+    }
+
+    private void setTokenCount(int value) {
+        tokenCount.set(value);
+    }
+
+    @Override
+    public IntegerProperty tokenCountProperty() {
+        return tokenCount;
     }
 
     @Override
@@ -27,6 +75,7 @@ public class Index implements IIndex {
         Document document = new Document(documentIndex);
         if (!invertedIndex.containsKey(term)) {
             invertedIndex.put(term, new DocumentList(term));
+            setTermCount(getTermCount() + 1);
         }
         if (!indexFilePaths.containsKey(documentIndex)) {
             indexFilePaths.put(documentIndex, filePath);
@@ -34,6 +83,7 @@ public class Index implements IIndex {
         final var documentList = invertedIndex.get(term);
         documentList.add(document);
         allDocumentIndexes.add(documentIndex);
+        setTokenCount(getTokenCount() + 1);
     }
 
     @Override
@@ -73,8 +123,8 @@ public class Index implements IIndex {
     public boolean index(final String text, final String filePath) {
         if (!filePaths.contains(filePath)) {
             filePaths.add(filePath);
-            preprocessor.tokenize(text).forEach(token -> addDocument(token, currentIndex, filePath));
-            currentIndex++;
+            preprocessor.tokenize(text).forEach(token -> addDocument(token, getDocumentCount(), filePath));
+            setDocumentCount(getDocumentCount() + 1);
             return true;
         }
         return false;

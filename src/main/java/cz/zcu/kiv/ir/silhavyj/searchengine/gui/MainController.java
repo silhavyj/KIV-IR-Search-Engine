@@ -9,6 +9,8 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -210,6 +212,59 @@ public class MainController implements Initializable {
         return textArea;
     }
 
+    private HBox createDocumentCountInfo(final IIndex index) {
+        HBox hBox = new HBox();
+        final var desc = createLabel("documents: ", false);
+        final var value = createLabel("0", false);
+        index.documentCountProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == null) {
+                Platform.runLater(() -> value.setText("null"));
+            } else {
+                Platform.runLater(() -> value.setText(newValue.toString()));
+            }
+        });
+        hBox.getChildren().addAll(desc, value);
+        return hBox;
+    }
+
+    private HBox createTokenCountInfo(final IIndex index) {
+        HBox hBox = new HBox();
+        final var desc = createLabel("tokens: ", false);
+        final var value = createLabel("0", false);
+        index.tokenCountProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == null) {
+                Platform.runLater(() -> value.setText("null"));
+            } else {
+                Platform.runLater(() -> value.setText(newValue.toString()));
+            }
+        });
+        hBox.getChildren().addAll(desc, value);
+        return hBox;
+    }
+
+    private HBox createTermCountInfo(final IIndex index) {
+        HBox hBox = new HBox();
+        final var desc = createLabel("terms: ", false);
+        final var value = createLabel("0", false);
+        index.termCountProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == null) {
+                Platform.runLater(() -> value.setText("null"));
+            } else {
+                Platform.runLater(() -> value.setText(newValue.toString()));
+            }
+        });
+        hBox.getChildren().addAll(desc, value);
+        return hBox;
+    }
+
+    private TreeItem createIndexTreeRecord(final IIndex index, final String name) {
+        TreeItem treeItem = new TreeItem(name);
+        treeItem.getChildren().add(new TreeItem<>(createDocumentCountInfo(index)));
+        treeItem.getChildren().add(new TreeItem<>(createTermCountInfo(index)));
+        treeItem.getChildren().add(new TreeItem<>(createTokenCountInfo(index)));
+        return treeItem;
+    }
+
     @FXML
     private void addJSONDocument() {
         final Stage stage = (Stage)menuBar.getScene().getWindow();
@@ -243,14 +298,19 @@ public class MainController implements Initializable {
                             switch (language) {
                                 case CZECH:
                                     break;
+                                case ENGLISH:
+                                    index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
+                                    languageIndexes.put(language.toString(), index);
+                                    treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
+                                    break;
                                 default:
-                                    languageIndexes.put(language.toString(), new Index(new EnglishPreprocessor("stopwords-en.txt")));
+                                    // TODO unsupported language
                                     break;
                             }
                         }
                         index = languageIndexes.get(language.toString());
 
-                        if (index.index(article, file.getAbsolutePath())) {
+                        if (index != null && index.index(article, file.getAbsolutePath())) {
                             statusLabel.setStyle("-fx-background-color: GREEN");
                         }
                         progress = (double)processedDocuments / files.size() * 100.0;

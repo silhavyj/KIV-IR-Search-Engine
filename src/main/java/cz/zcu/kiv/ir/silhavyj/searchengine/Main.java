@@ -13,8 +13,8 @@ public class Main extends Application {
     private static final String TITLE = "KIV/IR - Search Engine - silhavyj";
     private static final String VIEW_FXML_FILE = "view.fxml";
 
-    private static final int WINDOW_MIN_WIDTH = 720;
-    private static final int WINDOW_MIN_HEIGHT = 540;
+    private static final int WINDOW_MIN_WIDTH = 1000;
+    private static final int WINDOW_MIN_HEIGHT = 640;
 
     public static void main(String[] args) {
         launch();

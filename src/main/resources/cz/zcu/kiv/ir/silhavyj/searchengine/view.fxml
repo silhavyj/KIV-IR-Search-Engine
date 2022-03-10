@@ -100,7 +100,7 @@
       </VBox>
    </top>
    <right>
-      <TreeView fx:id="indexTreeView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TreeView fx:id="indexTreeView" prefHeight="200.0" prefWidth="250.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets left="5.0" right="10.0" top="10.0" />
          </BorderPane.margin></TreeView>

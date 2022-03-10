@@ -139,4 +139,11 @@ public class SearchTest {
         final var expected = createDocumentIndex(new LinkedList<>(Arrays.asList(0, 1, 2, 4)));
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void testSearch_15() {
+        final var actual = queryParser.search(index, "&(c++, cat, cow, dog)");
+        final var expected = createDocumentIndex(new LinkedList<>(Arrays.asList()));
+        assertEquals(expected, actual);
+    }
 }
