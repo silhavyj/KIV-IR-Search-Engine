@@ -1,5 +1,6 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine;
 
+import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.CzechPreprocessor;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

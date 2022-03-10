@@ -3,14 +3,13 @@ package cz.zcu.kiv.ir.silhavyj.searchengine.gui;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Document;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Index;
+import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.CzechPreprocessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.EnglishPreprocessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -297,6 +296,9 @@ public class MainController implements Initializable {
                         if (!languageIndexes.containsKey(language.toString())) {
                             switch (language) {
                                 case CZECH:
+                                    index = new Index(new CzechPreprocessor("stopwords-cs.txt"));
+                                    languageIndexes.put(language.toString(), index);
+                                    treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
                                     break;
                                 case ENGLISH:
                                     index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
@@ -304,8 +306,8 @@ public class MainController implements Initializable {
                                     treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
                                     break;
                                 default:
-                                    // TODO unsupported language
-                                    break;
+                                    System.out.println("Language detected in " + file.getName() + " is not supported");
+                                    continue;
                             }
                         }
                         index = languageIndexes.get(language.toString());
@@ -374,7 +376,7 @@ public class MainController implements Initializable {
         }
         if (result == null || result.isUninitialized()) {
             statusLabel.setStyle("-fx-background-color: RED");
-            statusLabel.setText("No results were found");
+            statusLabel.setText(language + " - no results were found");
         } else {
             displayResults(result, (int)topResultsCountSlider.getValue(), timeOfSearchInMS, index, language);
         }

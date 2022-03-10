@@ -39,9 +39,7 @@ public class EnglishPreprocessor implements IPreprocessor {
             String token = text.substring(start, end);
 
             if (!stopWords.contains(token)) {
-                token = token.toLowerCase();
-                token = stemmer.stem(token);
-                tokens.add(token);
+                tokens.add(preprocess(token));
             }
         }
         return tokens;
