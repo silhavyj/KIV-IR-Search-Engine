@@ -282,16 +282,15 @@ public class MainController implements Initializable {
             if (files != null) {
                 int processedDocuments = 0;
                 double progress;
+                long startTime = System.currentTimeMillis();
 
                 for (final var file : files) {
                     final var content = IOUtils.readFile(file.getAbsolutePath());
-
                     try {
                         processedDocuments++;
                         JSONObject data = new JSONObject(content);
                         final String article = (String)data.get("article");
 
-                        // TODO this is a bottle-neck
                         final var language = languageDetector.detectLanguageOf(article);
                         if (!languageIndexes.containsKey(language.toString())) {
                             switch (language) {
@@ -317,7 +316,8 @@ public class MainController implements Initializable {
                         }
                         progress = (double)processedDocuments / files.size() * 100.0;
                         double finalProgress = progress;
-                        Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "%)"));
+                        int timeStamp = (int)((System.currentTimeMillis() - startTime) * 0.0000167);
+                        Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "% | " + timeStamp + "min)"));
                     } catch (Exception e) {
                         e.printStackTrace();
                         statusLabel.setStyle("-fx-background-color: RED");

@@ -85,7 +85,7 @@
                            </toggleGroup>
                         </RadioButton>
                         <RadioButton fx:id="englishLanguageRadioBtn" mnemonicParsing="false" text="English" toggleGroup="$languages" />
-                        <RadioButton fx:id="autoDetectLanguageRadioBtn" mnemonicParsing="false" selected="true" text="Auto detect" toggleGroup="$languages" />
+                        <RadioButton mnemonicParsing="false" selected="true" text="Auto detect" toggleGroup="$languages" />
                      </children>
                      <padding>
                         <Insets right="10.0" />
