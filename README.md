@@ -1,5 +1,5 @@
 ## Running the application
 
 ```
-mvn javafx:run
+mvn clean javafx:run
 ```
