@@ -63,15 +63,12 @@ public class MainController implements Initializable {
     @FXML
     private RadioButton englishLanguageRadioBtn;
 
-    @FXML
-    private RadioButton autoDetectLanguageRadioBtn;
-
     private TreeItem<String> treeRootItem;
 
     final IQueryParser queryParser = new QueryParser(new QueryLexer());
 
     final Map<String, IIndex> languageIndexes = new HashMap<>();
-    final LanguageDetector languageDetector = LanguageDetectorBuilder.fromLanguages(ENGLISH, CZECH).build();
+    final LanguageDetector languageDetector = LanguageDetectorBuilder.fromLanguages(ENGLISH, CZECH, SLOVAK).build();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -96,8 +93,7 @@ public class MainController implements Initializable {
     private JSONObject getJSONDocument(final Document document, final IIndex index) {
         final String rawData = IOUtils.readFile(index.getFilePath(document.getIndex()));
         try {
-            JSONObject data = new JSONObject(rawData);
-            return data;
+            return new JSONObject(rawData);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -176,8 +172,7 @@ public class MainController implements Initializable {
     }
 
     private Separator createSeparator() {
-        Separator separator = new Separator();
-        return separator;
+        return new Separator();
     }
 
     private Label createLabel(final String text, boolean key) {
@@ -291,7 +286,10 @@ public class MainController implements Initializable {
                         JSONObject data = new JSONObject(content);
                         final String article = (String)data.get("article");
 
-                        final var language = languageDetector.detectLanguageOf(article);
+                        var language = languageDetector.detectLanguageOf(article);
+                        if (language == SLOVAK) {
+                            language = CZECH;
+                        }
                         if (!languageIndexes.containsKey(language.toString())) {
                             switch (language) {
                                 case CZECH:
