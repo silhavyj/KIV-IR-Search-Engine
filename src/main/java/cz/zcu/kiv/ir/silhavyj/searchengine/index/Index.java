@@ -74,7 +74,7 @@ public class Index implements IIndex {
     public void addDocument(final String term, int documentIndex, final String filePath) {
         Document document = new Document(documentIndex);
         if (!invertedIndex.containsKey(term)) {
-            invertedIndex.put(term, new DocumentList(term));
+            invertedIndex.put(term, new DocumentList());
             setTermCount(getTermCount() + 1);
         }
         if (!indexFilePaths.containsKey(documentIndex)) {

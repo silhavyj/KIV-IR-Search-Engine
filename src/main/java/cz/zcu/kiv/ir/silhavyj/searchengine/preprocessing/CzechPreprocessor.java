@@ -15,15 +15,13 @@ public class CzechPreprocessor implements IPreprocessor {
     private final StringBuffer sb;
     private final Set<String> stopWords;
 
-    private static final String regex = "(\\d+[,]\\d+[,]?(\\d+)?[,]?(\\d+)?)|(\\d+[:]\\d+)|(\\d+[.,](\\d+)?[.,]?(\\d+)?)|(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]|(?:(?<=^|[^\\p{L}\\d])'|'(?=[\\p{L}\\d]|$)|[\\p{L}\\d\\*])+|(<.*?>)";
+    private static final String regex = "(\\d+[,]\\d+[,]?(\\d+)?[,]?(\\d+)?)|(\\d+[:]\\d+)|(\\d+[.,](\\d+)?[.,]?(\\d+)?)|(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]|(?:(?<=^|[^\\p{L}\\d])'|'(?=[\\p{L}\\d]|$)|[\\p{L}\\d*])+|(<.*?>)";
 
     public CzechPreprocessor(final String stopWordsPath) {
         sb = new StringBuffer();
         stopWords = new HashSet<>();
         final var lines = IOUtils.readLines(stopWordsPath);
-        for (final var line : lines) {
-            stopWords.add(line);
-        }
+        stopWords.addAll(lines);
     }
 
     private void removeDerivational(StringBuffer buffer) {
@@ -221,7 +219,6 @@ public class CzechPreprocessor implements IPreprocessor {
                 buffer.substring( len- 2 ,len).equals("\00e1k")){ //-ák
 
             buffer.delete( len- 2 , len);
-            return;
         }
 
     }
@@ -319,7 +316,6 @@ public class CzechPreprocessor implements IPreprocessor {
                 buffer.substring( len- 1 ,len).equals("k")){
 
             buffer.delete( len- 1, len);
-            return;
         }
     }//removeDiminutives
 
@@ -332,7 +328,6 @@ public class CzechPreprocessor implements IPreprocessor {
 
             buffer.delete( len- 2 , len);
             palatalise(buffer);
-            return;
         }
 
     }
@@ -371,7 +366,6 @@ public class CzechPreprocessor implements IPreprocessor {
             return;
         }
         buffer.delete( len- 1 , len);
-        return;
     }//palatalise
 
     private void removePossessives(StringBuffer buffer) {
@@ -392,7 +386,6 @@ public class CzechPreprocessor implements IPreprocessor {
 
                 buffer.delete( len- 1 , len);
                 palatalise(buffer);
-                return;
             }
         }
     }//removePossessives
@@ -516,7 +509,6 @@ public class CzechPreprocessor implements IPreprocessor {
                     buffer.substring( len-1,len).equals("\u00fd")){   //-ý
 
                 buffer.delete( len- 1 , len);
-                return;
             }
         }//len>3
     }

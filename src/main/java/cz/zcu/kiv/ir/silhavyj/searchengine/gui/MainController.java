@@ -274,57 +274,55 @@ public class MainController implements Initializable {
         final var loaderWorker = new Thread(() -> {
             IIndex index;
             disableUserInput(true);
-            if (files != null) {
-                int processedDocuments = 0;
-                double progress;
-                long startTime = System.currentTimeMillis();
+            int processedDocuments = 0;
+            double progress;
+            long startTime = System.currentTimeMillis();
 
-                for (final var file : files) {
-                    final var content = IOUtils.readFile(file.getAbsolutePath());
-                    try {
-                        processedDocuments++;
-                        JSONObject data = new JSONObject(content);
-                        final String article = (String)data.get("article");
+            for (final var file : files) {
+                final var content = IOUtils.readFile(file.getAbsolutePath());
+                try {
+                    processedDocuments++;
+                    JSONObject data = new JSONObject(content);
+                    final String article = (String)data.get("article");
 
-                        var language = languageDetector.detectLanguageOf(article);
-                        if (language == SLOVAK) {
-                            language = CZECH;
-                        }
-                        if (!languageIndexes.containsKey(language.toString())) {
-                            switch (language) {
-                                case CZECH:
-                                    index = new Index(new CzechPreprocessor("stopwords-cs.txt"));
-                                    languageIndexes.put(language.toString(), index);
-                                    treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
-                                    break;
-                                case ENGLISH:
-                                    index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
-                                    languageIndexes.put(language.toString(), index);
-                                    treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
-                                    break;
-                                default:
-                                    System.out.println("Language detected in " + file.getName() + " is not supported");
-                                    continue;
-                            }
-                        }
-                        index = languageIndexes.get(language.toString());
-
-                        if (index != null && index.index(article, file.getAbsolutePath())) {
-                            statusLabel.setStyle("-fx-background-color: GREEN");
-                        }
-                        progress = (double)processedDocuments / files.size() * 100.0;
-                        double finalProgress = progress;
-                        int timeStamp = (int)((System.currentTimeMillis() - startTime) * 0.0000167);
-                        Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "% | " + timeStamp + "min)"));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        statusLabel.setStyle("-fx-background-color: RED");
-                        Platform.runLater(() -> statusLabel.setText("Failed to parse document " + file.getName()));
-                        break;
+                    var language = languageDetector.detectLanguageOf(article);
+                    if (language == SLOVAK) {
+                        language = CZECH;
                     }
+                    if (!languageIndexes.containsKey(language.toString())) {
+                        switch (language) {
+                            case CZECH:
+                                index = new Index(new CzechPreprocessor("stopwords-cs.txt"));
+                                languageIndexes.put(language.toString(), index);
+                                treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
+                                break;
+                            case ENGLISH:
+                                index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
+                                languageIndexes.put(language.toString(), index);
+                                treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
+                                break;
+                            default:
+                                System.out.println("Language detected in " + file.getName() + " is not supported");
+                                continue;
+                        }
+                    }
+                    index = languageIndexes.get(language.toString());
+
+                    if (index != null && index.index(article, file.getAbsolutePath())) {
+                        statusLabel.setStyle("-fx-background-color: GREEN");
+                    }
+                    progress = (double)processedDocuments / files.size() * 100.0;
+                    double finalProgress = progress;
+                    int timeStamp = (int)((System.currentTimeMillis() - startTime) * 0.0000167);
+                    Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "% | " + timeStamp + "min)"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    statusLabel.setStyle("-fx-background-color: RED");
+                    Platform.runLater(() -> statusLabel.setText("Failed to parse document " + file.getName()));
+                    break;
                 }
-                disableUserInput(false);
             }
+            disableUserInput(false);
         });
         loaderWorker.setDaemon(true);
         loaderWorker.start();

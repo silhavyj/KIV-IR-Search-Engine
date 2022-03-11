@@ -70,17 +70,13 @@ public class SearchOperations {
             return docs1;
         }
 
-        Document currentDoc = null;
+        Document currentDoc;
         if (docs1.getIndex() < docs2.getIndex()) {
             currentDoc = new Document(docs1.getIndex());
             docs1 = docs1.getNext();
         } else {
             currentDoc = new Document(docs2.getIndex());
             docs2 = docs2.getNext();
-        }
-
-        if (currentDoc == null) {
-            return new Document();
         }
 
         Document result = currentDoc;

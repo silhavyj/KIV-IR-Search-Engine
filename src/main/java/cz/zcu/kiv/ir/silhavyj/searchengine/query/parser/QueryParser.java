@@ -6,7 +6,6 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.index.SearchOperations;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType;
-import javafx.util.Pair;
 
 import java.util.*;
 
@@ -15,16 +14,12 @@ import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenTyp
 
 public class QueryParser implements IQueryParser {
 
-    private static final int NUMBER_OF_WORKERS = 5;
-
     private final IQueryLexer lexer;
     private QueryLexerToken currentToken;
     private String errorMessage;
     private final Stack<Document> operands;
     private QueryLexerTokenType clauseOperator;
     private IIndex index;
-    private int totalNumberOfOperations;
-    private boolean clauseFinished;
 
     public QueryParser(IQueryLexer lexer) {
         this.lexer = lexer;
@@ -44,27 +39,27 @@ public class QueryParser implements IQueryParser {
     private boolean processExpression() {
         switch (currentToken.getType()) {
             case NOT_OPERATOR:
-                return processNot();
+                return !processNot();
             case AND_OPERATOR:
             case OR_OPERATOR:
-                return processAndOr();
+                return !processAndOr();
             case IDENTIFIER:
-                return nextQueryToken();
+                return !nextQueryToken();
             default:
                 errorMessage = "Invalid clause";
-                return false;
+                return true;
         }
     }
 
     private boolean parseBeginningOfExpression() {
         if (!nextQueryToken()) {
-            return false;
+            return true;
         }
         if (currentToken.getType() != LEFT_PARENTHESES) {
             errorMessage = "Missing (";
-            return false;
+            return true;
         }
-        return nextQueryToken();
+        return !nextQueryToken();
     }
 
     private boolean parseEndOfExpression() {
@@ -76,17 +71,17 @@ public class QueryParser implements IQueryParser {
     }
 
     private boolean processNot() {
-        if (!parseBeginningOfExpression()) {
+        if (parseBeginningOfExpression()) {
             return false;
         }
-        if (!processExpression()) {
+        if (processExpression()) {
             return false;
         }
         return parseEndOfExpression();
     }
 
     private boolean processAndOr() {
-        if (!parseBeginningOfExpression()) {
+        if (parseBeginningOfExpression()) {
             return false;
         }
         if (!processArguments()) {
@@ -97,7 +92,7 @@ public class QueryParser implements IQueryParser {
 
     private boolean processArguments() {
         while (true) {
-            if (!processExpression()) {
+            if (processExpression()) {
                 return false;
             }
             if (currentToken.getType() == COMMA) {
@@ -109,51 +104,6 @@ public class QueryParser implements IQueryParser {
             break;
         }
         return true;
-    }
-
-    private synchronized Pair<Document, Document> getTwoOperands() {
-        if (operands.size() < 2) {
-            return null;
-        }
-        final var operand1 = operands.pop();
-        final var operand2 = operands.pop();
-        return new Pair<>(operand1, operand2);
-    }
-
-    private synchronized void addResultOfOperation(final Document document) {
-        if (document != null) {
-            operands.push(document);
-            totalNumberOfOperations--;
-            if (totalNumberOfOperations == 0) {
-                clauseFinished = true;
-            }
-        }
-    }
-
-    class Worker extends Thread {
-
-        @Override
-        public void run() {
-            Pair<Document, Document> twoOperands;
-            Document result = null;
-
-            while (!clauseFinished) {
-                twoOperands = getTwoOperands();
-                if (twoOperands == null) {
-                    // TODO wait
-                } else {
-                    switch (clauseOperator) {
-                        case OR_OPERATOR:
-                            result = SearchOperations.or(twoOperands.getKey(), twoOperands.getValue());
-                            break;
-                        case AND_OPERATOR:
-                            result = SearchOperations.and(twoOperands.getKey(), twoOperands.getValue());
-                            break;
-                    }
-                    addResultOfOperation(result);
-                }
-            }
-        }
     }
 
     private void performOperation() {
@@ -179,23 +129,6 @@ public class QueryParser implements IQueryParser {
             }
             operands.push(result);
         }
-
-        // TODO
-        /* clauseFinished = false;
-        totalNumberOfOperations = operands.size() - 1;
-
-        LinkedList<Worker> workers = new LinkedList<>();
-        for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
-            workers.add(new Worker());
-            workers.getLast().start();
-        }
-        for (final var worker : workers) {
-            try {
-                worker.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } */
     }
 
     @Override
@@ -217,7 +150,7 @@ public class QueryParser implements IQueryParser {
             if (!nextQueryToken()) {
                 return false;
             }
-            if (!processExpression()) {
+            if (processExpression()) {
                 return false;
             }
             if (currentToken.getType() != PERCENTAGE) {

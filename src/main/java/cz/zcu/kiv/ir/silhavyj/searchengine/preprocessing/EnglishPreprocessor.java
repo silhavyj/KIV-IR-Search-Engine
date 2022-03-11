@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class EnglishPreprocessor implements IPreprocessor {
 
-    private static final String regex = "(\\d+[,]\\d+[,]?(\\d+)?[,]?(\\d+)?)|(\\d+[:]\\d+)|(\\d+[.,](\\d+)?[.,]?(\\d+)?)|(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]|(?:(?<=^|[^\\p{L}\\d])'|'(?=[\\p{L}\\d]|$)|[\\p{L}\\d\\*])+|(<.*?>)";
+    private static final String regex = "(\\d+[,]\\d+[,]?(\\d+)?[,]?(\\d+)?)|(\\d+[:]\\d+)|(\\d+[.,](\\d+)?[.,]?(\\d+)?)|(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]|(?:(?<=^|[^\\p{L}\\d])'|'(?=[\\p{L}\\d]|$)|[\\p{L}\\d*])+|(<.*?>)";
 
     private final Set<String> stopWords;
     private final PorterStemmer stemmer;
@@ -22,9 +22,7 @@ public class EnglishPreprocessor implements IPreprocessor {
         stemmer = new PorterStemmer();
         stopWords = new HashSet<>();
         final var lines = IOUtils.readLines(stopWordsPath);
-        for (final var line : lines) {
-            stopWords.add(line);
-        }
+        stopWords.addAll(lines);
     }
 
     @Override

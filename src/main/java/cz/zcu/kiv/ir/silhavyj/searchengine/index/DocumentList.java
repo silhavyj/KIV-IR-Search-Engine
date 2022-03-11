@@ -5,10 +5,8 @@ public class DocumentList {
     private Document first;
     private Document last;
     private int count;
-    private final String word;
 
-    public DocumentList(final String word) {
-        this.word = word;
+    public DocumentList() {
         count = 0;
         first = null;
         last = null;
