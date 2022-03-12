@@ -63,6 +63,9 @@ public class MainController implements Initializable {
     @FXML
     private RadioButton englishLanguageRadioBtn;
 
+    @FXML
+    private RadioButton tfidfRadioButton;
+
     private TreeItem<String> treeRootItem;
 
     final IQueryParser queryParser = new QueryParser(new QueryLexer());

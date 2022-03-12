@@ -7,6 +7,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
@@ -17,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="464.0" minWidth="725.0" prefHeight="464.0" prefWidth="725.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.ir.silhavyj.searchengine.gui.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="900.0" prefHeight="464.0" prefWidth="725.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.zcu.kiv.ir.silhavyj.searchengine.gui.MainController">
    <center>
       <TabPane fx:id="resultsTabPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -46,7 +47,7 @@
                      <menus>
                         <Menu mnemonicParsing="false" text="File">
                            <items>
-                              <MenuItem fx:id="addJSONDocumentMenuItem" mnemonicParsing="false" onAction="#addJSONDocument" text="Add JSON Document" />
+                              <MenuItem fx:id="addJSONDocumentMenuItem" mnemonicParsing="false" onAction="#addJSONDocument" text="Add Document" />
                               <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="Close" />
                            </items>
                         </Menu>
@@ -77,6 +78,7 @@
                         <Slider fx:id="topResultsCountSlider" max="20.0" min="1.0" minWidth="200.0" value="5.0" />
                      </children>
                   </HBox>
+                  <Separator orientation="VERTICAL" />
                   <HBox spacing="10.0">
                      <children>
                         <RadioButton fx:id="czechLanguageRadioBtn" mnemonicParsing="false" text="Czech">
@@ -86,6 +88,14 @@
                         </RadioButton>
                         <RadioButton fx:id="englishLanguageRadioBtn" mnemonicParsing="false" text="English" toggleGroup="$languages" />
                         <RadioButton mnemonicParsing="false" selected="true" text="Auto detect" toggleGroup="$languages" />
+                        <Separator orientation="VERTICAL" />
+                        <RadioButton mnemonicParsing="false" text="Cosine">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="matrics" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="tfidfRadioButton" mnemonicParsing="false" text="TF_IDF" toggleGroup="$matrics" />
+                        <RadioButton mnemonicParsing="false" selected="true" text="None" toggleGroup="$matrics" />
                      </children>
                      <padding>
                         <Insets right="10.0" />
@@ -94,6 +104,14 @@
                </children>
                <padding>
                   <Insets left="10.0" right="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets right="20.0" top="10.0" />
                </padding>
             </HBox>
          </children>
