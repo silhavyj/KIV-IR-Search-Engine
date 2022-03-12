@@ -381,6 +381,9 @@ public class MainController implements Initializable {
             result = queryParser.search(index, query);
             end = System.currentTimeMillis();
             timeOfSearchInMS = end - start;
+            if (tfidfRadioButton.isSelected()) {
+                // TODO sort them according to their TF-IDF values
+            }
         } catch (Exception e) {
             statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText(queryParser.getErrorMessage());
