@@ -20,6 +20,7 @@ public class QueryParser implements IQueryParser {
     private final Stack<Document> operands;
     private QueryLexerTokenType clauseOperator;
     private IIndex index;
+    private Set<String> relevantWords;
 
     public QueryParser(IQueryLexer lexer) {
         this.lexer = lexer;
@@ -179,6 +180,8 @@ public class QueryParser implements IQueryParser {
         String term;
         QueryLexerToken lexerToken;
         final Stack<QueryParserToken> stack = new Stack<>();
+        relevantWords = new HashSet<>();
+        int numberOfNOTOperators = 0;
 
         lexer.resetToFirst();
         while (lexer.hasNextToken()) {
@@ -186,13 +189,18 @@ public class QueryParser implements IQueryParser {
             switch (lexerToken.getType()) {
                 case AND_OPERATOR:
                 case OR_OPERATOR:
-                case NOT_OPERATOR:
                 case LEFT_PARENTHESES:
                     stack.push(new QueryParserToken(lexerToken.getType(), null, null));
                     break;
+                case NOT_OPERATOR:
+                    numberOfNOTOperators++;
+                    stack.push(new QueryParserToken(lexerToken.getType(), null, null));
+                    break;
                 case IDENTIFIER:
-                    // TODO add spelling correction
                     term = lexerToken.getValue();
+                    if (numberOfNOTOperators % 2 == 0) {
+                        relevantWords.add(term);
+                    }
                     if (index.getPreprocessor() != null) {
                         term = index.getPreprocessor().preprocess(term);
                     }
@@ -212,6 +220,9 @@ public class QueryParser implements IQueryParser {
                     }
                     stack.pop();
                     clauseOperator = stack.pop().getType();
+                    if (clauseOperator == NOT_OPERATOR) {
+                        numberOfNOTOperators--;
+                    }
                     performOperation();
                     stack.add(new QueryParserToken(IDENTIFIER, operands.pop(), null));
                     break;
@@ -221,5 +232,10 @@ public class QueryParser implements IQueryParser {
             throw new IllegalArgumentException("Result is of the query empty");
         }
         return stack.pop().getDocument();
+    }
+
+    @Override
+    public Set<String> getRelevantWords() {
+        return relevantWords;
     }
 }
