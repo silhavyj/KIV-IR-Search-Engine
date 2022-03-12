@@ -259,6 +259,18 @@ public class MainController implements Initializable {
         return treeItem;
     }
 
+    JSONObject parseJSON(final String text) {
+        try {
+            JSONObject data = new JSONObject(text);
+            if (data.has("article") && data.has("title")) {
+                return data;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
     @FXML
     private void addJSONDocument() {
         final Stage stage = (Stage)menuBar.getScene().getWindow();
@@ -277,14 +289,14 @@ public class MainController implements Initializable {
             int processedDocuments = 0;
             double progress;
             long startTime = System.currentTimeMillis();
+            statusLabel.setStyle("-fx-background-color: GREEN");
 
             for (final var file : files) {
                 final var content = IOUtils.readFile(file.getAbsolutePath());
-                try {
-                    processedDocuments++;
-                    JSONObject data = new JSONObject(content);
+                processedDocuments++;
+                JSONObject data = parseJSON(content);
+                if (data != null) {
                     final String article = (String)data.get("article");
-
                     var language = languageDetector.detectLanguageOf(article);
                     if (language == SLOVAK) {
                         language = CZECH;
@@ -307,19 +319,20 @@ public class MainController implements Initializable {
                         }
                     }
                     index = languageIndexes.get(language.toString());
-
-                    if (index != null && index.index(article, file.getAbsolutePath())) {
-                        statusLabel.setStyle("-fx-background-color: GREEN");
+                    if (index == null || !index.index(article, file.getAbsolutePath())) {
+                        System.out.println("Failed to index document " + file.getName());
+                    } else {
+                        progress = (double) processedDocuments / files.size() * 100.0;
+                        double finalProgress = progress;
+                        long timeStamp = (long)((System.currentTimeMillis() - startTime) * 0.0000167);
+                        if (finalProgress >= 100) {
+                            Platform.runLater(() -> statusLabel.setText("Done " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
+                        } else {
+                            Platform.runLater(() -> statusLabel.setText("Indexing in progress " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
+                        }
                     }
-                    progress = (double)processedDocuments / files.size() * 100.0;
-                    double finalProgress = progress;
-                    int timeStamp = (int)((System.currentTimeMillis() - startTime) * 0.0000167);
-                    Platform.runLater(() -> statusLabel.setText("File " + file.getName() + " has been indexed (finished " + String.format("%.2f", finalProgress) + "% | " + timeStamp + "min)"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    statusLabel.setStyle("-fx-background-color: RED");
-                    Platform.runLater(() -> statusLabel.setText("Failed to parse document " + file.getName()));
-                    break;
+                } else {
+                    System.out.print("Failed to parse document " + file.getName());
                 }
             }
             disableUserInput(false);
