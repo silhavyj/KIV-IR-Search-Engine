@@ -1,6 +1,7 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor;
+import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -12,6 +13,7 @@ public class Index implements IIndex {
     private final Set<Integer> allDocumentIndexes;
     private final Set<String> filePaths;
     private final Map<Integer, String> indexFilePaths;
+    private final Map<Integer, BagOfWords> bagOfWords;
     private final IPreprocessor preprocessor;
     private final IntegerProperty documentCount;
     private final IntegerProperty termCount;
@@ -23,6 +25,7 @@ public class Index implements IIndex {
         allDocumentIndexes = new TreeSet<>();
         indexFilePaths = new HashMap<>();
         filePaths = new HashSet<>();
+        bagOfWords = new HashMap<>();
         documentCount = new SimpleIntegerProperty(0);
         termCount = new SimpleIntegerProperty(0);
         tokenCount = new SimpleIntegerProperty(0);
@@ -71,6 +74,25 @@ public class Index implements IIndex {
     }
 
     @Override
+    public double calculateTF_IDF(int index, Set<String> relevantTerms) {
+        final var bow = bagOfWords.get(index);
+        double rank = 0;
+        double tf;
+        double idf;
+
+        for (final var term : relevantTerms) {
+            tf = bow.getNumberOfOccurrences(term);
+            if (invertedIndex.containsKey(term)) {
+                idf = Math.log(invertedIndex.get(term).getCount()) / Math.log(getDocumentCount());
+            } else {
+                idf = 0;
+            }
+            rank += (tf * idf);
+        }
+        return rank;
+    }
+
+    @Override
     public void addDocument(final String term, int documentIndex, final String filePath) {
         Document document = new Document(documentIndex);
         if (!invertedIndex.containsKey(term)) {
@@ -79,8 +101,10 @@ public class Index implements IIndex {
         }
         if (!indexFilePaths.containsKey(documentIndex)) {
             indexFilePaths.put(documentIndex, filePath);
+            bagOfWords.put(documentIndex, new BagOfWords());
         }
         final var documentList = invertedIndex.get(term);
+        bagOfWords.get(documentIndex).addWord(term);
         documentList.add(document);
         allDocumentIndexes.add(documentIndex);
         setTokenCount(getTokenCount() + 1);

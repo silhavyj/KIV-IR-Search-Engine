@@ -93,6 +93,17 @@ public class MainController implements Initializable {
         queryTextField.setDisable(disable);
     }
 
+    private JSONObject getJSONDocument(int documentIndex, final IIndex index) {
+        final String rawData = IOUtils.readFile(index.getFilePath(documentIndex));
+        try {
+            return new JSONObject(rawData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     private JSONObject getJSONDocument(final Document document, final IIndex index) {
         final String rawData = IOUtils.readFile(index.getFilePath(document.getIndex()));
         try {
@@ -103,36 +114,40 @@ public class MainController implements Initializable {
         return null;
     }
 
-    private void displayResults(Document document, int count, long timeOfSearchInMS, final IIndex index, final Language language) {
+    private void displayResults(final List<Integer> resultIndexer, final HashMap<Integer, Double> ranks, int count, long timeOfSearchInMS, final IIndex index, final Language language) {
         JSONObject data;
         int totalNumberOfDocument = 0;
-        while (document != null && count > 0) {
-            data = getJSONDocument(document, index);
+
+        int documentIndex;
+        final var iter = resultIndexer.listIterator();
+
+        while (iter != null && iter.hasNext() && count > 0) {
+            documentIndex = iter.next();
+            data = getJSONDocument(documentIndex, index);
             if (data != null) {
-                final var resultTab = createResultTab(data, document, index);
+                final var resultTab = createResultTab(data, documentIndex, index, ranks);
                 resultsTabPane.getTabs().add(resultTab);
-                document = document.getNext();
             }
             count--;
             totalNumberOfDocument++;
         }
-        while (document != null) {
+        while (iter != null && iter.hasNext()) {
             totalNumberOfDocument++;
-            document = document.getNext();
+            iter.next();
         }
         statusLabel.setStyle("-fx-background-color: GREEN");
         statusLabel.setText(language + " - found " + totalNumberOfDocument + " matching documents (" + timeOfSearchInMS + "ms)");
     }
 
-    private Tab createResultTab(final JSONObject data, final Document document, final IIndex index) {
+    private Tab createResultTab(final JSONObject data, int documentIndex, final IIndex index, final HashMap<Integer, Double> ranks) {
         Tab tab = new Tab();
-        tab.setText(String.valueOf(Paths.get(index.getFilePath(document.getIndex())).getFileName()));
-        tab.setContent(createTabBody(data, document, index));
+        tab.setText(String.valueOf(Paths.get(index.getFilePath(documentIndex)).getFileName()));
+        tab.setContent(createTabBody(data, documentIndex, index, ranks));
         tab.setOnClosed(e -> resultsTabPane.getTabs().remove(tab));
         return tab;
     }
 
-    private VBox createTabBody(final JSONObject data, final Document document, final IIndex index) {
+    private VBox createTabBody(final JSONObject data, int documentIndex, final IIndex index, final HashMap<Integer, Double> ranks) {
         VBox vBox = new VBox();
         vBox.setSpacing(5);
         vBox.setPadding(new Insets(20, 20, 20, 20));
@@ -146,7 +161,8 @@ public class MainController implements Initializable {
         if (data.has("subject")) {
             vBox.getChildren().add(createMetadataInfo("Subject", (String)data.get("subject")));
         }
-        vBox.getChildren().add(createMetadataInfo("Location", index.getFilePath(document.getIndex())));
+        vBox.getChildren().add(createMetadataInfo("Rank", "" + ranks.get(documentIndex)));
+        vBox.getChildren().add(createMetadataInfo("Location", index.getFilePath(documentIndex)));
         vBox.getChildren().add(createSeparator());
         vBox.getChildren().add(createTitle((String)data.get("title")));
         if (data.has("url")) {
@@ -376,24 +392,46 @@ public class MainController implements Initializable {
         IIndex index = languageIndexes.get(language.toString());
 
         Document result;
+        final var resultList = new ArrayList<Integer>();
+        final var ranks = new HashMap<Integer, Double>();
+
         try {
             start = System.currentTimeMillis();
             result = queryParser.search(index, query);
+
+            final var relevantWords = queryParser.getRelevantWords();
+            final Set<String> relevantTerms = new HashSet<>();
+            for (final var word : relevantWords) {
+                relevantTerms.add(index.getPreprocessor().preprocess(word));
+            }
+
+            Document currentDocument = result;
+            while (currentDocument != null) {
+                resultList.add(currentDocument.getIndex());
+                if (tfidfRadioButton.isSelected() && !relevantTerms.isEmpty()) {
+                    ranks.put(currentDocument.getIndex(), index.calculateTF_IDF(currentDocument.getIndex(), relevantTerms));
+                } else {
+                    ranks.put(currentDocument.getIndex(), 0.0);
+                }
+                currentDocument = currentDocument.getNext();
+            }
+            resultList.sort((x, y) -> Double.compare(ranks.get(y), ranks.get(x)));
             end = System.currentTimeMillis();
             timeOfSearchInMS = end - start;
-            if (tfidfRadioButton.isSelected()) {
-                // TODO sort them according to their TF-IDF values
-            }
         } catch (Exception e) {
             statusLabel.setStyle("-fx-background-color: RED");
-            statusLabel.setText(queryParser.getErrorMessage());
+            if (queryParser.getErrorMessage() != null && !queryParser.getErrorMessage().equals("")) {
+                statusLabel.setText(queryParser.getErrorMessage());
+            } else {
+                statusLabel.setText(e.getMessage());
+            }
             return;
         }
         if (result == null || result.isUninitialized()) {
             statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText(language + " - no results were found");
         } else {
-            displayResults(result, (int)topResultsCountSlider.getValue(), timeOfSearchInMS, index, language);
+            displayResults(resultList, ranks, (int)topResultsCountSlider.getValue(), timeOfSearchInMS, index, language);
         }
     }
 

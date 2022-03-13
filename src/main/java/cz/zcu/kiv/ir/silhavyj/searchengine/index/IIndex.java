@@ -3,6 +3,8 @@ package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor;
 import javafx.beans.property.IntegerProperty;
 
+import java.util.Set;
+
 public interface IIndex {
 
     void addDocument(final String term, int documentIndex, final String filePath);
@@ -17,4 +19,5 @@ public interface IIndex {
     IntegerProperty termCountProperty();
     int getTokenCount();
     IntegerProperty tokenCountProperty();
+    double calculateTF_IDF(int index, Set<String> relevantTerms);
 }
