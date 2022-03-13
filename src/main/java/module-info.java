@@ -7,6 +7,7 @@ module cz.zcu.kiv.ir.silhavyj.searchengine {
     requires org.apache.opennlp.tools;
     requires org.json;
     requires lingua;
+    requires org.jsoup;
 
     opens cz.zcu.kiv.ir.silhavyj.searchengine to javafx.fxml;
 

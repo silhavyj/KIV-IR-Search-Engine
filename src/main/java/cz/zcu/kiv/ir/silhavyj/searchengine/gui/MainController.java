@@ -1,5 +1,7 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.gui;
 
+import cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.BBCNewsProcessor;
+import cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.ISiteProcessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Document;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Index;
@@ -21,14 +23,20 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
 
 import com.github.pemistahl.lingua.api.*;
+import org.jsoup.Jsoup;
+
 import static com.github.pemistahl.lingua.api.Language.*;
+import static java.time.LocalDateTime.now;
 
 public class MainController implements Initializable {
+
+    private static final String FETCHED_DATA_FOLDER = "fetched-data";
 
     @FXML
     private MenuBar menuBar;
@@ -69,12 +77,13 @@ public class MainController implements Initializable {
     private TreeItem<String> treeRootItem;
 
     final IQueryParser queryParser = new QueryParser(new QueryLexer());
-
     final Map<String, IIndex> languageIndexes = new HashMap<>();
     final LanguageDetector languageDetector = LanguageDetectorBuilder.fromLanguages(ENGLISH, CZECH, SLOVAK).build();
+    ISiteProcessor siteProcessor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        siteProcessor = new BBCNewsProcessor();
         topResultsCountSlider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null) {
                 topResultsCountLabel.setText("null");
@@ -95,17 +104,6 @@ public class MainController implements Initializable {
 
     private JSONObject getJSONDocument(int documentIndex, final IIndex index) {
         final String rawData = IOUtils.readFile(index.getFilePath(documentIndex));
-        try {
-            return new JSONObject(rawData);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
-    private JSONObject getJSONDocument(final Document document, final IIndex index) {
-        final String rawData = IOUtils.readFile(index.getFilePath(document.getIndex()));
         try {
             return new JSONObject(rawData);
         } catch (Exception e) {
@@ -439,5 +437,77 @@ public class MainController implements Initializable {
     private void closeApplication() {
         Platform.exit();
         System.exit(0);
+    }
+
+    @FXML
+    private void fetchDocumentFromURL() {
+        // TODO
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setHeaderText("Enter desired URL");
+        final var result = dialog.showAndWait();
+        if (result.isPresent()) {
+            statusLabel.setStyle("-fx-background-color: RED");
+            statusLabel.setText("fetching data...");
+            final String url = result.get();
+            final var webpage = fetchSiteContent(url);
+            if (webpage.isEmpty()) {
+                statusLabel.setStyle("-fx-background-color: RED");
+                statusLabel.setText("invalid URL");
+            } else {
+                final var data = siteProcessor.processSite(webpage.get());
+                if (data.isEmpty()) {
+                    statusLabel.setStyle("-fx-background-color: RED");
+                    statusLabel.setText("failed to fetch data from the given URL");
+                } else {
+                    final String article = (String)data.get().get("article");
+                    final String filename = FETCHED_DATA_FOLDER + "/" + now() + ".json";
+                    IOUtils.createDirectoryIfMissing(FETCHED_DATA_FOLDER);
+                    IOUtils.writeToFile(filename, data.get().toString());
+                    final var file = new File(filename);
+
+                    var language = languageDetector.detectLanguageOf(article);
+                    if (language == SLOVAK) {
+                        language = CZECH;
+                    }
+                    IIndex index;
+                    if (!languageIndexes.containsKey(language.toString())) {
+                        switch (language) {
+                            case CZECH:
+                                index = new Index(new CzechPreprocessor("stopwords-cs.txt"));
+                                languageIndexes.put(language.toString(), index);
+                                treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
+                                break;
+                            case ENGLISH:
+                                index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
+                                languageIndexes.put(language.toString(), index);
+                                treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
+                                break;
+                            default:
+                                System.out.println("Language detected in " + file.getName() + " is not supported");
+                                return;
+                        }
+                    }
+                    index = languageIndexes.get(language.toString());
+                    if (index == null || !index.index(article, file.getAbsolutePath())) {
+                        statusLabel.setStyle("-fx-background-color: RED");
+                        statusLabel.setText("failed to index the document");
+                    } else {
+                        statusLabel.setStyle("-fx-background-color: GREEN");
+                        statusLabel.setText("document has been successfully fetched and indexed");
+                    }
+                }
+            }
+        }
+    }
+
+    private Optional<org.jsoup.nodes.Document> fetchSiteContent(final String url) {
+        try {
+            var connection = Jsoup.connect(url);
+            var document = connection.get();
+            return Optional.of(document);
+        } catch (Exception e) {
+            System.err.println(String.format("Could not fetch the content of %s", url));
+        }
+        return Optional.empty();
     }
 }

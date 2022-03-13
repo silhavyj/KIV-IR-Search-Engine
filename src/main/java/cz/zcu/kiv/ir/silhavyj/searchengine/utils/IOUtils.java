@@ -1,8 +1,6 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,5 +50,35 @@ public class IOUtils {
             }
         }
         return stringBuilder.toString();
+    }
+
+    public static void createDirectoryIfMissing(final String dirname) {
+        final var dir = new File(dirname);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+    }
+
+    public static void writeToFile(final String filename, final String data) {
+        BufferedWriter bufferedWriter = null;
+        try {
+            File file = new File(filename);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file);
+            bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally  {
+            try {
+                if (bufferedWriter != null)
+                    bufferedWriter.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
