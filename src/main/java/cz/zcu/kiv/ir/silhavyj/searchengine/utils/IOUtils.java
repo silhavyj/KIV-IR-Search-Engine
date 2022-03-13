@@ -55,7 +55,9 @@ public class IOUtils {
     public static void createDirectoryIfMissing(final String dirname) {
         final var dir = new File(dirname);
         if (!dir.exists()) {
-            dir.mkdir();
+            if (!dir.mkdir()) {
+                System.err.printf("could not create directory %s", dirname);
+            }
         }
     }
 
@@ -64,7 +66,9 @@ public class IOUtils {
         try {
             File file = new File(filename);
             if (!file.exists()) {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    System.err.printf("could not create file %s", filename);
+                }
             }
             FileWriter fileWriter = new FileWriter(file);
             bufferedWriter = new BufferedWriter(fileWriter);

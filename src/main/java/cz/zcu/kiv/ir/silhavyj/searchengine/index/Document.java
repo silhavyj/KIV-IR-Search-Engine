@@ -22,10 +22,6 @@ public class Document {
         wordCount = 0;
     }
 
-    public int getWordCount() {
-        return wordCount;
-    }
-
     public void increaseWordCount() {
         this.wordCount += 1;
     }

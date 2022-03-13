@@ -1,7 +1,6 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor;
-import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 

@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
@@ -119,7 +120,7 @@ public class MainController implements Initializable {
         int documentIndex;
         final var iter = resultIndexer.listIterator();
 
-        while (iter != null && iter.hasNext() && count > 0) {
+        while (iter.hasNext() && count > 0) {
             documentIndex = iter.next();
             data = getJSONDocument(documentIndex, index);
             if (data != null) {
@@ -129,7 +130,7 @@ public class MainController implements Initializable {
             count--;
             totalNumberOfDocument++;
         }
-        while (iter != null && iter.hasNext()) {
+        while (iter.hasNext()) {
             totalNumberOfDocument++;
             iter.next();
         }
@@ -169,6 +170,14 @@ public class MainController implements Initializable {
         vBox.getChildren().add(createTextArea((String)data.get("article")));
 
         return vBox;
+    }
+
+    private void openWebpage(String url) {
+        try {
+            new ProcessBuilder("x-www-browser", url).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private HBox createHyperlink(final String url) {
@@ -338,18 +347,17 @@ public class MainController implements Initializable {
                     index = languageIndexes.get(language.toString());
                     if (index == null || !index.index(article, file.getAbsolutePath())) {
                         System.out.println("Failed to index document " + file.getName());
-                    } else {
-                        progress = (double) processedDocuments / files.size() * 100.0;
-                        double finalProgress = progress;
-                        long timeStamp = (long)((System.currentTimeMillis() - startTime) * 0.0000167);
-                        if (finalProgress >= 100) {
-                            Platform.runLater(() -> statusLabel.setText("Done " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
-                        } else {
-                            Platform.runLater(() -> statusLabel.setText("Indexing in progress " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
-                        }
                     }
                 } else {
                     System.out.print("Failed to parse document " + file.getName());
+                }
+                progress = (double) processedDocuments / files.size() * 100.0;
+                double finalProgress = progress;
+                long timeStamp = (long)((System.currentTimeMillis() - startTime) * 0.0000167);
+                if (finalProgress >= 100) {
+                    Platform.runLater(() -> statusLabel.setText("Done " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
+                } else {
+                    Platform.runLater(() -> statusLabel.setText("Indexing in progress " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
                 }
             }
             disableUserInput(false);
@@ -441,7 +449,6 @@ public class MainController implements Initializable {
 
     @FXML
     private void fetchDocumentFromURL() {
-        // TODO
         TextInputDialog dialog = new TextInputDialog();
         dialog.setHeaderText("Enter desired URL");
         final var result = dialog.showAndWait();
@@ -506,7 +513,7 @@ public class MainController implements Initializable {
             var document = connection.get();
             return Optional.of(document);
         } catch (Exception e) {
-            System.err.println(String.format("Could not fetch the content of %s", url));
+            System.err.printf("Could not fetch the content of %s%n", url);
         }
         return Optional.empty();
     }
