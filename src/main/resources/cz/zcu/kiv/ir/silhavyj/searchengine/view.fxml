@@ -90,7 +90,7 @@
                         <RadioButton fx:id="englishLanguageRadioBtn" mnemonicParsing="false" text="English" toggleGroup="$languages" />
                         <RadioButton mnemonicParsing="false" selected="true" text="Auto detect" toggleGroup="$languages" />
                         <Separator orientation="VERTICAL" />
-                        <RadioButton mnemonicParsing="false" text="Cosine">
+                        <RadioButton fx:id="cosineSimilarityRadioButton" mnemonicParsing="false" text="Cosine">
                            <toggleGroup>
                               <ToggleGroup fx:id="matrics" />
                            </toggleGroup>

@@ -20,4 +20,5 @@ public interface IIndex {
     int getTokenCount();
     IntegerProperty tokenCountProperty();
     double calculateTF_IDF(int index, Set<String> relevantTerms);
+    double calculateCosineSimilarity(int index, Set<String> relevantTerms);
 }

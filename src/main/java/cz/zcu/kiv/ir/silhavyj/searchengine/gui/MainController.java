@@ -1,5 +1,8 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.gui;
 
+import com.github.pemistahl.lingua.api.Language;
+import com.github.pemistahl.lingua.api.LanguageDetector;
+import com.github.pemistahl.lingua.api.LanguageDetectorBuilder;
 import cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.BBCNewsProcessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.ISiteProcessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Document;
@@ -11,6 +14,7 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,15 +26,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
-
-import com.github.pemistahl.lingua.api.*;
-import org.jsoup.Jsoup;
 
 import static com.github.pemistahl.lingua.api.Language.*;
 import static java.time.LocalDateTime.now;
@@ -75,7 +77,12 @@ public class MainController implements Initializable {
     @FXML
     private RadioButton tfidfRadioButton;
 
+    @FXML
+    private RadioButton cosineSimilarityRadioButton;
+
     private TreeItem<String> treeRootItem;
+
+    private HostServices hostServices;
 
     final IQueryParser queryParser = new QueryParser(new QueryLexer());
     final Map<String, IIndex> languageIndexes = new HashMap<>();
@@ -101,6 +108,10 @@ public class MainController implements Initializable {
         addJSONDocumentMenuItem.setDisable(disable);
         searchBtn.setDisable(disable);
         queryTextField.setDisable(disable);
+    }
+
+    public void setHostServices(final HostServices hostServices) {
+        this.hostServices = hostServices;
     }
 
     private JSONObject getJSONDocument(int documentIndex, final IIndex index) {
@@ -184,6 +195,7 @@ public class MainController implements Initializable {
         HBox hBox = new HBox();
         hBox.setSpacing(10);
         Hyperlink hyperlink = new Hyperlink();
+        hyperlink.setOnAction(e -> hostServices.showDocument("https://www.google.com"));
         hyperlink.setText(url);
         hBox.getChildren().add(hyperlink);
         return hBox;
@@ -416,6 +428,8 @@ public class MainController implements Initializable {
                 resultList.add(currentDocument.getIndex());
                 if (tfidfRadioButton.isSelected() && !relevantTerms.isEmpty()) {
                     ranks.put(currentDocument.getIndex(), index.calculateTF_IDF(currentDocument.getIndex(), relevantTerms));
+                } else if (cosineSimilarityRadioButton.isSelected() && !relevantTerms.isEmpty()) {
+                    ranks.put(currentDocument.getIndex(), index.calculateCosineSimilarity(currentDocument.getIndex(), relevantTerms));
                 } else {
                     ranks.put(currentDocument.getIndex(), 0.0);
                 }

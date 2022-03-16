@@ -92,6 +92,51 @@ public class Index implements IIndex {
     }
 
     @Override
+    public double calculateCosineSimilarity(int index, Set<String> relevantTerms) {
+        final var bag = new BagOfWords();
+        final var bow1 = bagOfWords.get(index);
+        final var bow2 = new BagOfWords();
+        bow2.addAllWords(relevantTerms);
+
+        bag.addAllWords(bow1);
+        bag.addAllWords(bow2);
+
+        double[] vec1 = new double[bag.getNumberOfUniqueWords()];
+        double[] vec2 = new double[bag.getNumberOfUniqueWords()];
+        int pos = 0;
+        int freq;
+        double IDF;
+
+        double normDoc1 = 0;
+        double normDoc2 = 0;
+        double multi = 0;
+
+        for (var word : bag.getWords()) {
+            vec1[pos] = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
+            vec2[pos] = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
+
+            freq = bow1.getNumberOfOccurrences(word) + bow2.getNumberOfOccurrences(word);
+            IDF = Math.log10(2.0 / freq);
+
+            vec1[pos] *= IDF;
+            vec2[pos] *= IDF;
+
+            multi += vec1[pos] * vec2[pos];
+            normDoc1 += vec1[pos] * vec1[pos];
+            normDoc2 += vec2[pos] * vec2[pos];
+
+            pos++;
+        }
+        normDoc1 = Math.sqrt(normDoc1);
+        normDoc2 = Math.sqrt(normDoc2);
+
+        if (normDoc1 * normDoc2 == 0)
+            return 0;
+
+        return multi / (normDoc1 * normDoc2);
+    }
+
+    @Override
     public void addDocument(final String term, int documentIndex, final String filePath) {
         Document document = new Document(documentIndex);
         if (!invertedIndex.containsKey(term)) {

@@ -1,7 +1,6 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine.index;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BagOfWords {
 
@@ -13,9 +12,27 @@ public class BagOfWords {
         totalNumberOfWords = 0;
     }
 
+    public List<String> getWords() {
+        return new LinkedList<>(words.keySet());
+    }
+
+    public void addAllWords(final Set<String> words) {
+        for (final var word : words) {
+            addWord(word);
+        }
+    }
+
+    public void addAllWords(final BagOfWords document) {
+        document.words.forEach((word, count) -> addWord(word, count));
+    }
+
+    public void addWord(String word, int count) {
+        words.put(word, words.getOrDefault(word, 0) + count);
+        totalNumberOfWords += count;
+    }
+
     public void addWord(String word) {
-        words.put(word, words.getOrDefault(word, 0) + 1);
-        totalNumberOfWords++;
+        addWord(word, 1);
     }
 
     public int getTotalNumberOfWords() {
