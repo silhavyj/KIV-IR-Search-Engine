@@ -139,7 +139,7 @@ public class QueryParser implements IQueryParser {
 
     @Override
     public boolean isValidQuery(final String query) {
-        errorMessage = "";
+        errorMessage = "Error has occurred";
         try {
             lexer.tokenize(query);
             if (!nextQueryToken()) {

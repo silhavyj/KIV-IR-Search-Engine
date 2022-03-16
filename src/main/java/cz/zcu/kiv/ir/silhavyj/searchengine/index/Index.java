@@ -74,7 +74,7 @@ public class Index implements IIndex {
 
     @Override
     public double calculateTF_IDF(int index, Set<String> relevantTerms) {
-        final var bow = bagOfWords.get(index);
+        /*final var bow = bagOfWords.get(index);
         double rank = 0;
         double tf;
         double idf;
@@ -86,6 +86,18 @@ public class Index implements IIndex {
             } else {
                 idf = 0;
             }
+            rank += (tf * idf);
+        }
+        return rank;*/
+
+        final var bow = bagOfWords.get(index);
+        double rank = 0;
+        double tf;
+        double idf;
+
+        for (final var term : relevantTerms) {
+            tf = 1 + Math.log(bow.getNumberOfOccurrences(term));
+            idf = Math.log(getDocumentCount() / invertedIndex.get(term).getCount());
             rank += (tf * idf);
         }
         return rank;
