@@ -13,9 +13,7 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.EnglishPreprocessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix;
-import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserPrefix;
 import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
-import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,7 +28,6 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.*;
@@ -83,8 +80,6 @@ public class MainController implements Initializable {
 
     private TreeItem<String> treeRootItem;
 
-    private HostServices hostServices;
-
     final IQueryParser queryParser = new QueryParseInfix(new QueryLexer());
     final Map<String, IIndex> languageIndexes = new HashMap<>();
     final LanguageDetector languageDetector = LanguageDetectorBuilder.fromLanguages(ENGLISH, CZECH, SLOVAK).build();
@@ -109,10 +104,6 @@ public class MainController implements Initializable {
         addJSONDocumentMenuItem.setDisable(disable);
         searchBtn.setDisable(disable);
         queryTextField.setDisable(disable);
-    }
-
-    public void setHostServices(final HostServices hostServices) {
-        this.hostServices = hostServices;
     }
 
     private JSONObject getJSONDocument(int documentIndex, final IIndex index) {
@@ -184,19 +175,10 @@ public class MainController implements Initializable {
         return vBox;
     }
 
-    private void openWebpage(String url) {
-        try {
-            new ProcessBuilder("x-www-browser", url).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private HBox createHyperlink(final String url) {
         HBox hBox = new HBox();
         hBox.setSpacing(10);
         Hyperlink hyperlink = new Hyperlink();
-        hyperlink.setOnAction(e -> hostServices.showDocument("https://www.google.com"));
         hyperlink.setText(url);
         hBox.getChildren().add(hyperlink);
         return hBox;
