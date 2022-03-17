@@ -12,7 +12,7 @@ import java.util.*;
 import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer.QUERY_SURROUNDING_CHARACTER;
 import static cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType.*;
 
-public class QueryParser implements IQueryParser {
+public class QueryParserPrefix implements IQueryParser {
 
     private final IQueryLexer lexer;
     private QueryLexerToken currentToken;
@@ -22,7 +22,7 @@ public class QueryParser implements IQueryParser {
     private IIndex index;
     private Set<String> relevantWords;
 
-    public QueryParser(IQueryLexer lexer) {
+    public QueryParserPrefix(IQueryLexer lexer) {
         this.lexer = lexer;
         operands = new Stack<>();
         errorMessage = "";

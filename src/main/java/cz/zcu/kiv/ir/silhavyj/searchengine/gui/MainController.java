@@ -12,7 +12,8 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.CzechPreprocessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.EnglishPreprocessor;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
-import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParser;
+import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix;
+import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserPrefix;
 import cz.zcu.kiv.ir.silhavyj.searchengine.utils.IOUtils;
 import javafx.application.HostServices;
 import javafx.application.Platform;
@@ -84,7 +85,7 @@ public class MainController implements Initializable {
 
     private HostServices hostServices;
 
-    final IQueryParser queryParser = new QueryParser(new QueryLexer());
+    final IQueryParser queryParser = new QueryParseInfix(new QueryLexer());
     final Map<String, IIndex> languageIndexes = new HashMap<>();
     final LanguageDetector languageDetector = LanguageDetectorBuilder.fromLanguages(ENGLISH, CZECH, SLOVAK).build();
     ISiteProcessor siteProcessor;

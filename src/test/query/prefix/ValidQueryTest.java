@@ -1,7 +1,7 @@
-package query;
+package query.prefix;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
-import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParser;
+import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserPrefix;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -9,11 +9,11 @@ import static org.junit.Assert.assertTrue;
 
 public class ValidQueryTest {
 
-    private static QueryParser queryParser;
+    private static QueryParserPrefix queryParser;
 
     @BeforeClass
     public static void setUpBeforeClass() {
-        queryParser = new QueryParser(new QueryLexer());
+        queryParser = new QueryParserPrefix(new QueryLexer());
     }
 
     @Test
