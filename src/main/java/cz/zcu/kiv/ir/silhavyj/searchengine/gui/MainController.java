@@ -335,7 +335,7 @@ public class MainController implements Initializable {
                 processedDocuments++;
                 JSONObject data = parseJSON(content);
                 if (data != null) {
-                    final String article = (String)data.get("article");
+                    final String article = data.get("title") + (String)data.get("article");
                     var language = languageDetector.detectLanguageOf(article);
                     if (language == SLOVAK) {
                         language = CZECH;
@@ -481,7 +481,7 @@ public class MainController implements Initializable {
                     statusLabel.setStyle("-fx-background-color: RED");
                     statusLabel.setText("failed to fetch data from the given URL");
                 } else {
-                    final String article = (String)data.get().get("article");
+                    final String article = data.get().get("title") + (String)data.get().get("article");
                     final String filename = FETCHED_DATA_FOLDER + "/" + now() + ".json";
                     IOUtils.createDirectoryIfMissing(FETCHED_DATA_FOLDER);
                     IOUtils.writeToFile(filename, data.get().toString());

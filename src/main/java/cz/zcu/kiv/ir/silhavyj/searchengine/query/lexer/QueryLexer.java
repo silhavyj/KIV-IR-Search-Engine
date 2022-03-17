@@ -59,6 +59,9 @@ public class QueryLexer implements IQueryLexer {
                     i++;
                 }
                 if (stringBuilder.length() > 0) {
+                    if (tokens.size() >= 1 && tokens.get(tokens.size() - 1).getType() == QueryLexerTokenType.IDENTIFIER) {
+                        tokens.add(new QueryLexerToken(QueryLexerTokenType.AND_OPERATOR, "&"));
+                    }
                     tokens.add(new QueryLexerToken(QueryLexerTokenType.IDENTIFIER, stringBuilder.toString()));
                 }
                 i--;

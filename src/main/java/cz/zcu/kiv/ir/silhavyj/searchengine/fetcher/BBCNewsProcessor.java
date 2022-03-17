@@ -46,6 +46,9 @@ public class BBCNewsProcessor implements ISiteProcessor {
     /*** Subject key in the JSON object. */
     private static final String JSON_SUBJECT_KEY = "subject";
 
+    /*** URL key in the JSON object. */
+    private static final String URL = "url";
+
     /*** Document to be analyzed. */
     private Document document;
 
@@ -161,6 +164,7 @@ public class BBCNewsProcessor implements ISiteProcessor {
                 jsonObject.put(JSON_TITLE_KEY, title);
                 jsonObject.put(JSON_DATETIME_KEY, datetime);
                 jsonObject.put(JSON_ARTICLE_KEY, article);
+                jsonObject.put(URL, document.location());
 
                 // If there's also an author, add it to the object as well.
                 if (author != null) {
