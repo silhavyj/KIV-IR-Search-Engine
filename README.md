@@ -54,3 +54,19 @@ The trec-all folder came with the assignment as test data. These documents were 
 The trec-separated folder hold the same documents as trec-all. The only different is that it splits them up into suborders of 5,000 documents, so they're easier to move around.
 
 ## Importing documents
+
+Through *File -> Add Document*, the user can add documents into the application. They can select as many documents as they want. However, inserting 86,000 documents may take some time, so they're also given the option to stop inserting documents at any point. 
+
+<img src="img/adding_documents.gif">
+
+They can see the progress in the bottom right corner as well as on the right side of the application provides more detailed information, such as what indexes where created, how many tokens there are, etc.
+
+---
+**NOTE**
+
+On a computer with the following parameters, it took me somewhere between 10 and 14 minutes to process the entire trec-all folder. The bbc-news folder took about 1-2 minutes to process.
+
+CPU: Intel i7-4710MQ (8) @ 3.500GHz\
+GPU: Intel 4th Gen Core Processor\
+Memory: 6084MiB / 7638MiB
+---
