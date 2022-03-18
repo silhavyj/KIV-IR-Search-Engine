@@ -211,6 +211,7 @@ public class MainController implements Initializable {
         VBox.setMargin(hBox, new Insets(5, 0, 0, 0));
 
         final var titleLabel = createLabel(title, true);
+        titleLabel.setWrapText(true);
         titleLabel.setStyle("-fx-font-size: 18px");
 
         hBox.getChildren().add(titleLabel);
