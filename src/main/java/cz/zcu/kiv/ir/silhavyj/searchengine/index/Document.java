@@ -5,7 +5,6 @@ public class Document {
     public static final int UNINITIALIZED = -1;
 
     private final int index;
-    private int wordCount;
     private Document next;
 
     public Document() {
@@ -19,11 +18,9 @@ public class Document {
     public Document(int index, final Document next) {
         this.index = index;
         this.next = next;
-        wordCount = 0;
     }
 
     public void increaseWordCount() {
-        this.wordCount += 1;
     }
 
     public boolean isUninitialized() {

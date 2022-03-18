@@ -5,11 +5,9 @@ import java.util.*;
 public class BagOfWords {
 
     private final Map<String, Integer> words;
-    private int totalNumberOfWords;
 
     public BagOfWords() {
         words = new HashMap<>();
-        totalNumberOfWords = 0;
     }
 
     public List<String> getWords() {
@@ -23,20 +21,15 @@ public class BagOfWords {
     }
 
     public void addAllWords(final BagOfWords document) {
-        document.words.forEach((word, count) -> addWord(word, count));
+        document.words.forEach(this::addWord);
     }
 
     public void addWord(String word, int count) {
         words.put(word, words.getOrDefault(word, 0) + count);
-        totalNumberOfWords += count;
     }
 
     public void addWord(String word) {
         addWord(word, 1);
-    }
-
-    public int getTotalNumberOfWords() {
-        return totalNumberOfWords;
     }
 
     public int getNumberOfUniqueWords() {

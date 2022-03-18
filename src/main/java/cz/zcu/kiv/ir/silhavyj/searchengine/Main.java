@@ -1,6 +1,5 @@
 package cz.zcu.kiv.ir.silhavyj.searchengine;
 
-import cz.zcu.kiv.ir.silhavyj.searchengine.gui.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +24,6 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(VIEW_FXML_FILE));
         Scene scene = new Scene(fxmlLoader.load());
-        MainController controller = fxmlLoader.getController();
         stage.setTitle(TITLE);
         stage.setScene(scene);
         stage.setMinHeight(WINDOW_MIN_HEIGHT);
