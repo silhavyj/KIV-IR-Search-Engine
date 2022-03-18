@@ -8,6 +8,12 @@ import org.jsoup.nodes.Node;
 import java.util.List;
 import java.util.Optional;
 
+/***
+ * @author Jakub Silhavy
+ *
+ * This class represents a site processor. It parses
+ * an HTML page into a JSON format using XPATHS.
+ */
 public class BBCNewsProcessor implements ISiteProcessor {
 
     /*** XPATH of the title of an article. */

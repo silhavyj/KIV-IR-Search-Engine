@@ -38,6 +38,8 @@ import static java.time.LocalDateTime.now;
 public class MainController implements Initializable {
 
     private static final String FETCHED_DATA_FOLDER = "fetched-data";
+    private static final String STOPWORDS_CZECH = "stopwords-cs.txt";
+    private static final String STOPWORDS_ENGLISH = "stopwords-en.txt";
 
     @FXML
     private MenuBar menuBar;
@@ -341,12 +343,12 @@ public class MainController implements Initializable {
                     if (!languageIndexes.containsKey(language.toString())) {
                         switch (language) {
                             case CZECH:
-                                index = new Index(new CzechPreprocessor("stopwords-cs.txt"));
+                                index = new Index(new CzechPreprocessor(STOPWORDS_CZECH));
                                 languageIndexes.put(language.toString(), index);
                                 treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
                                 break;
                             case ENGLISH:
-                                index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
+                                index = new Index(new EnglishPreprocessor(STOPWORDS_ENGLISH));
                                 languageIndexes.put(language.toString(), index);
                                 treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
                                 break;
@@ -493,12 +495,12 @@ public class MainController implements Initializable {
                     if (!languageIndexes.containsKey(language.toString())) {
                         switch (language) {
                             case CZECH:
-                                index = new Index(new CzechPreprocessor("stopwords-cs.txt"));
+                                index = new Index(new CzechPreprocessor(STOPWORDS_CZECH));
                                 languageIndexes.put(language.toString(), index);
                                 treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
                                 break;
                             case ENGLISH:
-                                index = new Index(new EnglishPreprocessor("stopwords-en.txt"));
+                                index = new Index(new EnglishPreprocessor(STOPWORDS_ENGLISH));
                                 languageIndexes.put(language.toString(), index);
                                 treeRootItem.getChildren().add(createIndexTreeRecord(index, language.toString()));
                                 break;
