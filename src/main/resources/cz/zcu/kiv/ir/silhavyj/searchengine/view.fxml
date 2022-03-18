@@ -53,11 +53,6 @@
                               <MenuItem mnemonicParsing="false" onAction="#closeApplication" text="Close" />
                            </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Help">
-                           <items>
-                              <MenuItem mnemonicParsing="false" text="About" />
-                           </items>
-                        </Menu>
                      </menus>
                   </MenuBar>
                   <TextField fx:id="queryTextField" onAction="#search" prefHeight="28.0" prefWidth="336.0" HBox.hgrow="ALWAYS">

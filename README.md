@@ -1,6 +1,56 @@
+# Search Engine Application
+
+This application represents a simple search engine that was developed as a semester project within the KIV/IR module at the University of West Bohemia. Using a boolean expression, it allows the user to search for specific documents within a given set of documents that was inputted into the application. The results of a search can be sorted either by [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity) or [tf-idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf). It also supports automatic language detection. However, for the sake of simplicity, the user can search for documents only in Czech or English.
+
+<img src="img/showcase.gif">
+
+## Requirements
+
+In order to successfully run the application, the user is required to have **Java** and **Maven** installed on their computer. During the process of development, the following versions were used.
+
+```                                             
+openjdk 11.0.14 2022-01-18
+Apache Maven 3.6.3
+```
+
 ## Running the application
+
+Once you've installed all the requirements, all there is left to do is navigating into the root folder of the project structure and executing the following command.
 
 ```
 mvn clean javafx:run
 ```
-Data for this project can be downloaded from [here](https://drive.google.com/drive/folders/1lGohFQETohWDUK9kqwkimeKebN3FLS1G?usp=sharing).
+
+Maven should automatically download all dependencies that are used by the application. If you are on Linux, Maven, by default, stores all dependencies into `~/.m2`  
+
+<img src="img/build.gif">
+
+## Provided data
+
+In order to use the application, the user needs to have a set of documents that will be inserted into the search engine. Each document needs to have the following JSON structure.
+
+```json
+{ 
+  "datetime": "2022-02-02T18:08:31.000Z",
+  "author": "Pritti Mistry", 
+  "title": "Bethany Vincent: How mum tried to escape her murdering ex", 
+  "article": "Bethany Vincent and her son, ...",
+  "url": "https://www.bbc.com/news/uk-england-lincolnshire-60175235"
+}
+```
+
+It is worth mentioning that the only obligatory fields are **title** and **article**. The rest is just metadata that will be displayed with each result. Some documents were crawled down beforehand and can be downloaded from [here](https://drive.google.com/drive/folders/1lGohFQETohWDUK9kqwkimeKebN3FLS1G?usp=sharing). The folder contains three zip files, bbc-news, trec-all, trec-separated.
+
+### BBC News
+
+The bbc-news folder holds roughly about 8,500 articles downloaded from https://www.bbc.com/news.
+
+### Trec-all
+
+The trec-all folder came with the assignment as test data. These documents were originally serialized in a binary file, so I took the liberty of converting them into a unified JSON format. This folder contains a fair amount of documents, approximately 86,000. 
+
+### Trec-separated
+
+The trec-separated folder hold the same documents as trec-all. The only different is that it splits them up into suborders of 5,000 documents, so they're easier to move around.
+
+## Importing documents
