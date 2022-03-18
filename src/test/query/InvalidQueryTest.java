@@ -1,7 +1,8 @@
-package query.infix;
+package query;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
-import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserPrefix;
+import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
+import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -9,11 +10,11 @@ import static org.junit.Assert.assertFalse;
 
 public class InvalidQueryTest {
 
-    private static QueryParserPrefix queryParser;
+    private static IQueryParser queryParser;
 
     @BeforeClass
     public static void setUpBeforeClass() {
-        queryParser = new QueryParserPrefix(new QueryLexer());
+        queryParser = new QueryParseInfix(new QueryLexer());
     }
 
     @Test

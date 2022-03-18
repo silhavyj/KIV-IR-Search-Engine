@@ -6,7 +6,6 @@ import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix;
-import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserPrefix;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

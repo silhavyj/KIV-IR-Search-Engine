@@ -1,4 +1,4 @@
-package query.infix;
+package query;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer;
 import cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix;
