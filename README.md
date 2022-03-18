@@ -79,4 +79,36 @@ An example of an article the user may want to try to index could be: https://www
 
 Once an article is fetched, it is stored into a fetched-data folder which is located in the root folder of the project structure.
 
-## Searching for specific documents
+## Searching documents
+
+### Search options
+
+Before entering a query, the user has several options to further customize the search. They are given the option to choose how many results they want to be presented with. This ranges from 1 up to 20 results. Another option is to choose the language, in which they want to perform the search. They can also leave it up to automatic language detection if they want to. However, it's better to be sure that you're searching in the right index. Lastly, they can set the metrics that will be used to rank the documents matching the query.
+
+### Queries
+
+As required, the query supports AND, OR, and NOT logical operators. These operators are represented as `&`, `|`, and `!`. The user can also use parenthesis to explicitly define priorities. If two words are not separated by any of the operators, e.g. `word1 word2`, they are automatically evaluated as `word1 & word2`.
+
+#### Examples
+
+English queries
+```
+price & (gas | petrol) & (increase | high) & Northern Ireland
+```
+
+```
+biden & !trump
+```
+
+```
+Christmas & !(Omicron | coronavirus)
+```
+
+Czech queries
+
+```
+pejsek & kočička & !válka & pohádka
+```
+```
+17. & února & 1979
+```
