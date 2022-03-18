@@ -78,7 +78,11 @@ public class MainController implements Initializable {
     @FXML
     private RadioButton cosineSimilarityRadioButton;
 
+    @FXML
+    private Button stopLoadingBtn;
+
     private TreeItem<String> treeRootItem;
+    private boolean stopDocumentLoading;
 
     final IQueryParser queryParser = new QueryParseInfix(new QueryLexer());
     final Map<String, IIndex> languageIndexes = new HashMap<>();
@@ -98,12 +102,14 @@ public class MainController implements Initializable {
 
         treeRootItem = new TreeItem<>("index");
         indexTreeView.setRoot(treeRootItem);
+        stopLoadingBtn.setVisible(false);
     }
 
     private void disableUserInput(boolean disable) {
         addJSONDocumentMenuItem.setDisable(disable);
         searchBtn.setDisable(disable);
         queryTextField.setDisable(disable);
+        stopLoadingBtn.setVisible(disable);
     }
 
     private JSONObject getJSONDocument(int documentIndex, final IIndex index) {
@@ -294,6 +300,11 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void stopDocumentLoading() {
+        stopDocumentLoading = true;
+    }
+
+    @FXML
     private void addJSONDocument() {
         final Stage stage = (Stage)menuBar.getScene().getWindow();
         final FileChooser fileChooser = new FileChooser();
@@ -307,6 +318,7 @@ public class MainController implements Initializable {
         }
         final var loaderWorker = new Thread(() -> {
             IIndex index;
+            stopDocumentLoading = false;
             disableUserInput(true);
             int processedDocuments = 0;
             double progress;
@@ -314,6 +326,9 @@ public class MainController implements Initializable {
             statusLabel.setStyle("-fx-background-color: GREEN");
 
             for (final var file : files) {
+                if (stopDocumentLoading) {
+                    break;
+                }
                 final var content = IOUtils.readFile(file.getAbsolutePath());
                 processedDocuments++;
                 JSONObject data = parseJSON(content);
