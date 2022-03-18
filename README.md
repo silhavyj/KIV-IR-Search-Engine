@@ -4,6 +4,19 @@ This application represents a simple search engine that was developed as a semes
 
 <img src="img/showcase.gif">
 
+- [Requirements](#requirements)
+- [Running the application](#running-the-application)
+- [Provided data](#provided-data)
+    * [BBC News](#bbc-news)
+    * [Trec-all](#trec-all)
+    * [Trec-separated](#trec-separated)
+- [Importing documents](#importing-documents)
+- [Fetching additional documents](#fetching-additional-documents)
+- [Searching documents](#searching-documents)
+    * [Search options](#search-options)
+    * [Queries](#queries)
+        + [Examples](#examples)
+
 ## Requirements
 
 In order to successfully run the application, the user is required to have **Java** and **Maven** installed on their computer. During the process of development, the following versions were used.
