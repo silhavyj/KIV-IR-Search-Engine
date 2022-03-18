@@ -59,10 +59,24 @@ Through *File -> Add Document*, the user can add documents into the application.
 
 <img src="img/adding_documents.gif">
 
-They can see the progress in the bottom right corner as well as on the right side of the application provides more detailed information, such as what indexes where created, how many tokens there are, etc.
+They can see the progress in the bottom right corner as well as on the right side of the application that provides more detailed information, such as what indexes where created, how many tokens there are, etc.
 
 On a computer with the following parameters, it took me somewhere between 10 and 14 minutes to process the entire trec-all folder. The bbc-news folder took about 1-2 minutes to process.
 
 CPU: Intel i7-4710MQ (8) @ 3.500GHz\
 GPU: Intel 4th Gen Core Processor\
 Memory: 6084MiB / 7638MiB
+
+The user doesn't have to worry about indexing multiple instances of the same document. The application keeps track of all documents, and if it encounters a document that has already been indexed, it will simply skip it.
+
+## Fetching additional documents
+
+Using *File -> Fetch & Add Document*, the user can index addition documents. The documents are supposed to be from https://www.bbc.com/news. If the URL doesn't lead to one of the bbc articles, the request to index it will be discarded.
+
+An example of an article the user may want to try to index could be: https://www.bbc.com/news/uk-wales-60764061
+
+<img src="img/fetching_documens.gif">
+
+Once an article is fetched, it is stored into a fetched-data folder which is located in the root folder of the project structure.
+
+## Searching for specific documents
