@@ -1,4 +1,4 @@
-package search.infix;
+package search;
 
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex;
 import cz.zcu.kiv.ir.silhavyj.searchengine.index.Index;
