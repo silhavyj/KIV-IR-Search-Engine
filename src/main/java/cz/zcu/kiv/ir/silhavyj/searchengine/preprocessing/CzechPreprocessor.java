@@ -10,6 +10,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/***
+ * This class was taken and modified from the second practical of the KIV/IR module.
+ * The original code can be found at https://github.com/dundalek/czech-stemmer
+ */
 public class CzechPreprocessor implements IPreprocessor {
 
     private final StringBuffer sb;
