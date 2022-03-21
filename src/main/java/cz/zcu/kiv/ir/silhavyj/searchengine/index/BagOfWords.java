@@ -22,6 +22,7 @@ public class BagOfWords {
 
     /***
      * Returns a list of unique terms occurring in a document.
+     * @return list of unique terms occurring in a document.
      * */
     public List<String> getWords() {
         return new LinkedList<>(words.keySet());
