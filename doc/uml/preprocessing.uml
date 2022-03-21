@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing</OriginalElement>
+  <nodes>
+    <node x="127.0" y="0.0">cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor</node>
+    <node x="0.0" y="79.0">cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.CzechPreprocessor</node>
+    <node x="210.0" y="79.0">cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.EnglishPreprocessor</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.EnglishPreprocessor" target="cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor" relationship="REALIZATION">
+      <point x="0.0" y="-14.5" />
+      <point x="311.0" y="54.0" />
+      <point x="203.0" y="54.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.CzechPreprocessor" target="cz.zcu.kiv.ir.silhavyj.searchengine.preprocessing.IPreprocessor" relationship="REALIZATION">
+      <point x="0.0" y="-14.5" />
+      <point x="95.0" y="54.0" />
+      <point x="203.0" y="54.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="206.0" y="54.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

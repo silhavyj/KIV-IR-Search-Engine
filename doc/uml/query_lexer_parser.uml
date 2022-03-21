@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer</OriginalElement>
+  <nodes>
+    <node x="272.6955394580123" y="96.21739130434781">cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserToken</node>
+    <node x="-11.125" y="347.14046822742466">cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer</node>
+    <node x="436.08393141945754" y="351.6859227728792">cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser</node>
+    <node x="49.25" y="81.92110474361277">cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken</node>
+    <node x="207.67029643073204" y="348.0788952563872">cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix</node>
+    <node x="66.32539043930808" y="-42.655172413793125">cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType</node>
+    <node x="159.545296430732" y="215.0">cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType" relationship="DEPENDENCY">
+      <point x="-49.875" y="-14.5" />
+      <point x="5.5" y="-28.15517241379314" />
+      <point x="12.039812833374214" y="-28.15517241379314" />
+      <point x="12.039812833374214" y="-28.155172413793096" />
+      <point x="67.44867655030987" y="-28.155172413793096" />
+      <point x="-104.87671388899821" y="-6.1206896551724554" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserToken" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType" relationship="TO_ONE">
+      <point x="-14.58130254500469" y="-14.165667166416767" />
+      <point x="350.11423691300763" y="52.78110944527735" />
+      <point x="266.82758620689657" y="52.78110944527735" />
+      <point x="94.50219576758849" y="15.120689655172427" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType" relationship="TO_ONE">
+      <point x="44.25" y="-14.5" />
+      <point x="9.67460956069192" y="18.568965517241395" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserToken" relationship="CREATE">
+      <point x="73.52524302728028" y="-15.000645919517467" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" relationship="CREATE">
+      <point x="19.687180076921607" y="-13.099062264966335" />
+      <point x="75.0621800769216" y="146.0" />
+      <point x="75.51672553146705" y="146.0" />
+      <point x="-62.233274468532954" y="13.70574162679408" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" relationship="TO_MANY">
+      <point x="-62.625" y="-14.5" />
+      <point x="228.54529643073204" y="293.814323607427" />
+      <point x="119.60763462237614" y="293.814323607427" />
+      <point x="-18.14236537762386" y="15.97846889952136" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType" relationship="TO_MANY">
+      <point x="-16.625" y="-14.5" />
+      <point x="38.75" y="244.0" />
+      <point x="30.09463739477772" y="244.0" />
+      <point x="30.09463739477772" y="35.17241379310346" />
+      <point x="87.51724137931035" y="35.17241379310346" />
+      <point x="-84.80814905999773" y="16.500000000000014" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.IQueryParser" relationship="REALIZATION">
+      <point x="84.48301745927643" y="3.6070275164919963" />
+      <point x="508.58393141945754" y="366.1859227728792" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" relationship="CREATE">
+      <point x="31.456277510038888" y="-15.690301091931246" />
+      <point x="322.6265739407709" y="254.0" />
+      <point x="324.08499697519653" y="254.0" />
+      <point x="324.08499697519653" y="176.24060150375942" />
+      <point x="214.14871967162844" y="176.24060150375942" />
+      <point x="76.39871967162844" y="15.892374880211705" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" relationship="TO_MANY">
+      <point x="-16.625" y="-14.5" />
+      <point x="38.75" y="244.0" />
+      <point x="55.375" y="244.0" />
+      <point x="55.375" y="152.0" />
+      <point x="55.468878641515005" y="152.0" />
+      <point x="-82.281121358485" y="16.02631578947367" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexer" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer" relationship="REALIZATION">
+      <point x="49.875" y="-14.5" />
+      <point x="105.25" y="244.0" />
+      <point x="-46.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer" relationship="DEPENDENCY">
+      <point x="-20.875" y="-14.5" />
+      <point x="270.29529643073204" y="244.0" />
+      <point x="46.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParseInfix" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer" relationship="TO_ONE">
+      <point x="-62.625" y="-14.5" />
+      <point x="228.54529643073204" y="322.5779091666552" />
+      <point x="228.545296430732" y="322.5779091666552" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.parser.QueryParserToken" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType" relationship="DEPENDENCY">
+      <point x="-46.0" y="-14.5" />
+      <point x="318.6955394580123" y="70.0" />
+      <point x="223.37931034482762" y="70.0" />
+      <point x="51.053919905519535" y="19.25862068965519" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerTokenType" relationship="DEPENDENCY">
+      <point x="-20.572102609538774" y="-15.775862068965523" />
+      <point x="117.17789739046123" y="70.0" />
+      <point x="119.32539043930808" y="70.0" />
+      <point x="-53.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.IQueryLexer" target="cz.zcu.kiv.ir.silhavyj.searchengine.query.lexer.QueryLexerToken" relationship="DEPENDENCY">
+      <point x="-47.67243882806909" y="-13.53448275862064" />
+      <point x="180.87285760266292" y="133.20689655172416" />
+      <point x="180.05781058071935" y="133.20689655172416" />
+      <point x="42.30781058071935" y="17.710556698393518" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.5999999999999996" showDependencies="true" x="297.1032651261738" y="171.37500000000006" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

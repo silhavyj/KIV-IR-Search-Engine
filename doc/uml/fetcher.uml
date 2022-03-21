@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>cz.zcu.kiv.ir.silhavyj.searchengine.fetcher</OriginalElement>
+  <nodes>
+    <node x="17.5" y="0.0">cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.ISiteProcessor</node>
+    <node x="0.0" y="79.0">cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.BBCNewsProcessor</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.BBCNewsProcessor" target="cz.zcu.kiv.ir.silhavyj.searchengine.fetcher.ISiteProcessor" relationship="REALIZATION">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="14.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="true" x="95.5" y="54.0" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

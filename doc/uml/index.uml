@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>cz.zcu.kiv.ir.silhavyj.searchengine.index</OriginalElement>
+  <nodes>
+    <node x="408.5" y="262.487684729064">cz.zcu.kiv.ir.silhavyj.searchengine.index.Index</node>
+    <node x="383.359375" y="-61.0">cz.zcu.kiv.ir.silhavyj.searchengine.index.Document</node>
+    <node x="10.5" y="81.0">cz.zcu.kiv.ir.silhavyj.searchengine.index.BagOfWords</node>
+    <node x="373.5" y="81.0">cz.zcu.kiv.ir.silhavyj.searchengine.index.DocumentList</node>
+    <node x="545.5" y="81.0">cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex</node>
+    <node x="169.5" y="81.0">cz.zcu.kiv.ir.silhavyj.searchengine.index.SearchOperations</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.DocumentList" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.Document" relationship="DEPENDENCY">
+      <point x="18.144978433544622" y="-13.417976760082013" />
+      <point x="468.21640700497323" y="82.08202323991799" />
+      <point x="468.21640700497323" y="60.0" />
+      <point x="22.357032004973235" y="12.010594668489432" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.Document" relationship="DEPENDENCY">
+      <point x="0.0" y="-14.5" />
+      <point x="594.0" y="60.0" />
+      <point x="487.52604166666663" y="60.0" />
+      <point x="41.66666666666663" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.Index" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.BagOfWords" relationship="CREATE">
+      <point x="-45.20927301216125" y="1.4455914558100744" />
+      <point x="409.29072698783875" y="284.14756189915977" />
+      <point x="45.25" y="284.14756189915977" />
+      <point x="-34.75" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.Index" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.IIndex" relationship="REALIZATION">
+      <point x="46.58620689655169" y="3.344827586206918" />
+      <point x="594.0" y="280.3325123152709" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.Index" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.BagOfWords" relationship="TO_MANY">
+      <point x="-16.874403220804197" y="-13.120689655172384" />
+      <point x="437.6255967791958" y="163.0" />
+      <point x="114.75" y="163.0" />
+      <point x="34.75" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.Index" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.DocumentList" relationship="CREATE">
+      <point x="-3.2573819442084186" y="-8.439838591342607" />
+      <point x="451.2426180557916" y="174.14285714285714" />
+      <point x="450.39155422600436" y="174.14285714285714" />
+      <point x="0.8915542260043594" y="15.175505712189477" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.DocumentList" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.Document" relationship="TO_ONE">
+      <point x="-4.140735852169655" y="-16.275119617224874" />
+      <point x="445.35926414783034" y="60.0" />
+      <point x="445.859375" y="60.0" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.SearchOperations" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.Document" relationship="CREATE">
+      <point x="72.83120680842069" y="-14.875000000000057" />
+      <point x="334.3312068084207" y="28.499999999999986" />
+      <point x="404.95620680842063" y="28.499999999999986" />
+      <point x="-40.90316819157937" y="13.999999999999972" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.Index" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.Document" relationship="CREATE">
+      <point x="-30.961280876308365" y="15.04002463054178" />
+      <point x="423.53871912369164" y="311.57142857142856" />
+      <point x="-9.0" y="311.57142857142856" />
+      <point x="-9.0" y="-50.624999999999986" />
+      <point x="388.08120680842063" y="-50.624999999999986" />
+      <point x="388.08120680842063" y="-40.234375000000014" />
+      <point x="383.70620680842063" y="-40.234375000000014" />
+      <point x="-62.15316819157937" y="-4.125000000000014" />
+    </edge>
+    <edge source="cz.zcu.kiv.ir.silhavyj.searchengine.index.Index" target="cz.zcu.kiv.ir.silhavyj.searchengine.index.DocumentList" relationship="TO_MANY">
+      <point x="25.82520974645945" y="-9.588891302810623" />
+      <point x="480.32520974645945" y="131.0" />
+      <point x="481.0148649188733" y="131.0" />
+      <point x="31.514864918873286" y="13.100763869603156" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.45" showDependencies="true" x="351.73895966276274" y="127.540634215859" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
