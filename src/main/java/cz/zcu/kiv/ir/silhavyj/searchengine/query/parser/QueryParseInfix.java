@@ -70,7 +70,7 @@ public class QueryParseInfix implements IQueryParser {
      * @return List of tokens which represent the query written in a postfix notation
      * @throws IllegalArgumentException if the user enters an invalid expression
      */
-    private final List<QueryLexerToken> getPostfixNotation() throws IllegalArgumentException {
+    private List<QueryLexerToken> getPostfixNotation() throws IllegalArgumentException {
         final List<QueryLexerToken> result = new LinkedList<>();
         final Stack<QueryLexerToken> stack = new Stack<>();
         QueryLexerToken token;
