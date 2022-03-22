@@ -73,4 +73,9 @@ public class RelevantWordsTest {
         assertEquals(Stream.of("A", "B", "C").collect(Collectors.toCollection(HashSet::new)), queryParser.getRelevantWords());
     }
 
+    @Test
+    public void testRelevantWords_09() {
+        queryParser.search(index, "cat & !(dog | !cow)");
+        assertEquals(Stream.of("cat", "cow").collect(Collectors.toCollection(HashSet::new)), queryParser.getRelevantWords());
+    }
 }
