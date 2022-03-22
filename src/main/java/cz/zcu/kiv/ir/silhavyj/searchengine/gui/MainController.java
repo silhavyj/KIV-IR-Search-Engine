@@ -358,6 +358,11 @@ public class MainController implements Initializable {
         return hBox;
     }
 
+    /***
+     * Creates a text area the contains the content of a document
+     * @param content content of a document
+     * @return created TextArea
+     */
     private TextArea createTextArea(final String content) {
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
@@ -368,10 +373,18 @@ public class MainController implements Initializable {
         return textArea;
     }
 
+    /***
+     * Creates information about how many documents have been indexed so far.
+     * The label is bound to documentCountProperty of a particular index.
+     * @param index index that we want to monitor (number of documents).
+     * @return HBox displaying the number of currently indexed documents
+     */
     private HBox createDocumentCountInfo(final IIndex index) {
         HBox hBox = new HBox();
         final var desc = createLabel("documents: ", false);
         final var value = createLabel("0", false);
+
+        // Add a listener to documentCountProperty.
         index.documentCountProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null) {
                 Platform.runLater(() -> value.setText("null"));
@@ -383,10 +396,18 @@ public class MainController implements Initializable {
         return hBox;
     }
 
+    /***
+     * Creates information about how many tokens have been spotted during indexing so far.
+     * The label is bound to tokenCountProperty of a particular index.
+     * @param index index that we want to monitor (number of tokens).
+     * @return HBox displaying the number of currently found tokens.
+     */
     private HBox createTokenCountInfo(final IIndex index) {
         HBox hBox = new HBox();
         final var desc = createLabel("tokens: ", false);
         final var value = createLabel("0", false);
+
+        // Add a listener to tokenCountProperty.
         index.tokenCountProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null) {
                 Platform.runLater(() -> value.setText("null"));
@@ -398,10 +419,18 @@ public class MainController implements Initializable {
         return hBox;
     }
 
+    /***
+     * Creates information about how many terms have been spotted during indexing so far.
+     * The label is bound to termCountProperty of a particular index.
+     * @param index index that we want to monitor (number of terms).
+     * @return HBox displaying the number of currently found terms.
+     */
     private HBox createTermCountInfo(final IIndex index) {
         HBox hBox = new HBox();
         final var desc = createLabel("terms: ", false);
         final var value = createLabel("0", false);
+
+        // Add a listener to tokenCountProperty.
         index.termCountProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null) {
                 Platform.runLater(() -> value.setText("null"));
@@ -413,6 +442,12 @@ public class MainController implements Initializable {
         return hBox;
     }
 
+    /***
+     * Creates a TreView node that holds information about a given index.
+     * @param index index that we want to monitor
+     * @param name name of the index (the language of the index)
+     * @return new TreeItem
+     */
     private TreeItem createIndexTreeRecord(final IIndex index, final String name) {
         TreeItem treeItem = new TreeItem(name);
         treeItem.getChildren().add(new TreeItem<>(createDocumentCountInfo(index)));
@@ -421,9 +456,16 @@ public class MainController implements Initializable {
         return treeItem;
     }
 
-    JSONObject parseJSON(final String text) {
+    /***
+     * Tries to parse a text file.
+     * @param text plain text (assumed to be a JSON file)
+     * @return JSON object if the text's been parsed successfully. Null, otherwise.
+     */
+    private JSONObject parseJSON(final String text) {
         try {
             JSONObject data = new JSONObject(text);
+
+            // Each document needs to have these two compulsory fields.
             if (data.has("article") && data.has("title")) {
                 return data;
             }
@@ -433,45 +475,71 @@ public class MainController implements Initializable {
         return null;
     }
 
+    /***
+     * Stops loading documents from the disk.
+     * This could be used if the user selected to upload multiple
+     * files, and it is taking too much time to process.
+     */
     @FXML
     private void stopDocumentLoading() {
         stopDocumentLoading = true;
     }
 
+    /***
+     * Imports JSON documents into the application.
+     */
     @FXML
     private void addJSONDocument() {
         final Stage stage = (Stage)menuBar.getScene().getWindow();
-        final FileChooser fileChooser = new FileChooser();
 
+        // Create a new file chooser.
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select a document to index");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("JSON", "*.json"));
 
+        // Get a list of the documents the user wants to add.
         final var files = fileChooser.showOpenMultipleDialog(stage);
         if (files == null) {
             return;
         }
+
+        // Create a new thread to process all documents.
         final var loaderWorker = new Thread(() -> {
             IIndex index;
-            stopDocumentLoading = false;
-            disableUserInput(true);
             int processedDocuments = 0;
             double progress;
+
+            // Disable user input.
+            stopDocumentLoading = false;
+            disableUserInput(true);
+
+            // Start measuring time.
             long startTime = System.currentTimeMillis();
             statusLabel.setStyle("-fx-background-color: GREEN");
 
+            // Iterate through all documents and process them.
             for (final var file : files) {
+                // If the user terminated the processes.
                 if (stopDocumentLoading) {
                     break;
                 }
-                final var content = IOUtils.readFile(file.getAbsolutePath());
                 processedDocuments++;
+
+                // Read the file and parse it into JSON object.
+                final var content = IOUtils.readFile(file.getAbsolutePath());
                 JSONObject data = parseJSON(content);
+
+                // Make sure the file has the correct structure.
                 if (data != null) {
                     final String article = data.get("title") + " " + data.get("article");
+
+                    // Detect the language of the documents (SLOVAK and CZECH) are treated the same.
                     var language = languageDetector.detectLanguageOf(article);
                     if (language == SLOVAK) {
                         language = CZECH;
                     }
+
+                    // If an index for the detected language has not yet been created, create it.
                     if (!languageIndexes.containsKey(language.toString())) {
                         switch (language) {
                             case CZECH:
@@ -489,6 +557,7 @@ public class MainController implements Initializable {
                                 continue;
                         }
                     }
+                    // Index the document.
                     index = languageIndexes.get(language.toString());
                     if (index == null || !index.index(article, file.getAbsolutePath())) {
                         System.out.println("Failed to index document " + file.getName());
@@ -496,6 +565,8 @@ public class MainController implements Initializable {
                 } else {
                     System.out.print("Failed to parse document " + file.getName());
                 }
+
+                // Calculate the progress and display it in the status label.
                 progress = (double) processedDocuments / files.size() * 100.0;
                 double finalProgress = progress;
                 long timeStamp = (long)((System.currentTimeMillis() - startTime) * 0.0000167);
@@ -505,16 +576,22 @@ public class MainController implements Initializable {
                     Platform.runLater(() -> statusLabel.setText("Indexing in progress " + String.format("%.2f", finalProgress) + "% | " + timeStamp + " min"));
                 }
             }
+            // Enable user input again.
             disableUserInput(false);
         });
         loaderWorker.setDaemon(true);
         loaderWorker.start();
     }
 
+    /***
+     * Performs a search.
+     */
     @FXML
     private void search() {
+        // Clear the results
         resultsTabPane.getTabs().clear();
 
+        // Make sure the query is not empty.
         final String query = queryTextField.getText();
         if (query == null || query.isEmpty()) {
             statusLabel.setStyle("-fx-background-color: RED");
@@ -526,6 +603,7 @@ public class MainController implements Initializable {
         long start;
         long timeOfSearchInMS;
 
+        // Detect the language of the query.
         Language language;
         if (czechLanguageRadioBtn.isSelected()) {
             language = CZECH;
@@ -535,11 +613,14 @@ public class MainController implements Initializable {
             language = languageDetector.detectLanguageOf(query);
         }
 
+        // Make sure there is an index created for the detected language.
         if (!languageIndexes.containsKey(language.toString())) {
             statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText("There are no files indexed in the " + language + " language");
             return;
         }
+
+        // Get the corresponding index (by the language).
         IIndex index = languageIndexes.get(language.toString());
 
         Document result;
@@ -547,15 +628,20 @@ public class MainController implements Initializable {
         final var ranks = new HashMap<Integer, Double>();
 
         try {
+            // Start measuring time.
             start = System.currentTimeMillis();
+
+            // Perform the search itself.
             result = queryParser.search(index, query);
 
+            // Retrieve relevant words.
             final var relevantWords = queryParser.getRelevantWords();
             final Set<String> relevantTerms = new HashSet<>();
             for (final var word : relevantWords) {
                 relevantTerms.add(index.getPreprocessor().preprocess(word));
             }
 
+            // Rank the document (TF-IDF, cosine similarity, or None)
             Document currentDocument = result;
             while (currentDocument != null) {
                 resultList.add(currentDocument.getIndex());
@@ -568,7 +654,11 @@ public class MainController implements Initializable {
                 }
                 currentDocument = currentDocument.getNext();
             }
+
+            // Sort the documents by their ranks
             resultList.sort((x, y) -> Double.compare(ranks.get(y), ranks.get(x)));
+
+            // Stop measuring time.
             end = System.currentTimeMillis();
             timeOfSearchInMS = end - start;
         } catch (Exception e) {
@@ -580,6 +670,7 @@ public class MainController implements Initializable {
             }
             return;
         }
+        // No results found.
         if (result == null || result.isUninitialized()) {
             statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText(language + " - no results were found");
@@ -588,22 +679,35 @@ public class MainController implements Initializable {
         }
     }
 
+    /***
+     * Closes the application.
+     */
     @FXML
     private void closeApplication() {
         Platform.exit();
         System.exit(0);
     }
 
+    /***
+     * Fetches a document from a given URL.
+     */
     @FXML
     private void fetchDocumentFromURL() {
+        // Create a text dialog so that the user can input a URL.
         TextInputDialog dialog = new TextInputDialog();
         dialog.setHeaderText("Enter desired URL");
         final var result = dialog.showAndWait();
+
         if (result.isPresent()) {
+            // Update the status label.
             statusLabel.setStyle("-fx-background-color: RED");
             statusLabel.setText("fetching data...");
+
+            // Fetch the website.
             final String url = result.get();
             final var webpage = fetchSiteContent(url);
+
+            // Display an error message if the fetch was not successful.
             if (webpage.isEmpty()) {
                 statusLabel.setStyle("-fx-background-color: RED");
                 statusLabel.setText("invalid URL");
@@ -613,16 +717,21 @@ public class MainController implements Initializable {
                     statusLabel.setStyle("-fx-background-color: RED");
                     statusLabel.setText("failed to fetch data from the given URL");
                 } else {
-                    final String article = data.get().get("title") + " "+ data.get().get("article");
+                    // Store the document locally.
                     final String filename = FETCHED_DATA_FOLDER + "/" + now() + ".json";
                     IOUtils.createDirectoryIfMissing(FETCHED_DATA_FOLDER);
                     IOUtils.writeToFile(filename, data.get().toString());
+
+                    final String article = data.get().get("title") + " "+ data.get().get("article");
                     final var file = new File(filename);
 
+                    // Detect the language the document.
                     var language = languageDetector.detectLanguageOf(article);
                     if (language == SLOVAK) {
                         language = CZECH;
                     }
+
+                    // If an index for the detected language has not yet been created, create it.
                     IIndex index;
                     if (!languageIndexes.containsKey(language.toString())) {
                         switch (language) {
@@ -641,6 +750,7 @@ public class MainController implements Initializable {
                                 return;
                         }
                     }
+                    // Index the document.
                     index = languageIndexes.get(language.toString());
                     if (index == null || !index.index(article, file.getAbsolutePath())) {
                         statusLabel.setStyle("-fx-background-color: RED");
@@ -654,6 +764,12 @@ public class MainController implements Initializable {
         }
     }
 
+    /***
+     * Downloads the content of a website.
+     * The content is going to be used for further analysis, so it could be indexed.
+     * @param url URL of the website (document)
+     * @return instance of org.jsoup.nodes.Document holding the content of the site.
+     */
     private Optional<org.jsoup.nodes.Document> fetchSiteContent(final String url) {
         try {
             var connection = Jsoup.connect(url);
