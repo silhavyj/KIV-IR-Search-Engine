@@ -60,7 +60,7 @@ The bbc-news folder holds roughly about 8,500 articles downloaded from https://w
 
 ### Trec-all
 
-The trec-all folder came with the assignment as test data. These documents were originally serialized in a binary file, so I took the liberty of converting them into a unified JSON format. This folder contains a fair amount of documents, approximately 86,000. 
+The trec-all folder came with the assignment as test data. These documents were originally serialized in a binary file, so I took the liberty of converting them into a unified JSON format. This folder contains a fair amount of documents, approximately 81,000. 
 
 ### Trec-separated
 
@@ -68,7 +68,7 @@ The trec-separated folder holds the same documents as trec-all. The only differe
 
 ## Importing documents
 
-Through *File -> Add Document*, the user can add documents into the application. They can select as many documents as they want. However, inserting 86,000 documents may take some time, so they're also given the option to stop the insertion at any point. 
+Through *File -> Add Document*, the user can add documents into the application. They can select as many documents as they want. However, inserting 81,000 documents may take some time, so they're also given the option to stop the insertion at any point. 
 
 <img src="img/adding_documents.gif">
 
