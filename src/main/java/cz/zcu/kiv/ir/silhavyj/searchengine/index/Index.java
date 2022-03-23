@@ -147,24 +147,48 @@ public class Index implements IIndex {
      */
     @Override
     public double calculateTF_IDF(int index, Set<String> relevantTerms) {
-        double rank = 0;
-        double tf;
-        double idf;
+        // Create one bag-of-words that will hold all words of both documents.
+        final var bag = new BagOfWords();
 
         // Get the bag of words of the document.
-        final var bow = bagOfWords.get(index);
+        final var bow1 = bagOfWords.get(index);
 
-        // Add up tf-idf of all words in the query.
-        for (final var term : relevantTerms) {
-            // If the number of occurrences is zero, the td-idf for this word will be 0.
-            // Therefore, it won't contribute to the final rank at all.
-            tf = Math.max(0, 1 + Math.log10(bow.getNumberOfOccurrences(term)));
-            idf = Math.log10((double)getDocumentCount() / invertedIndex.get(term).getCount());
-            rank += (tf * idf);
+        // Create a bag-of-words out of the given words of a query
+        final var bow2 = new BagOfWords();
+        bow2.addAllWords(relevantTerms);
+
+        // Union both bags into the overall bag-of-words.
+        bag.addAllWords(bow1);
+        bag.addAllWords(bow2);
+
+        int freq;
+        double IDF;
+
+        double normDoc1 = 0;
+        double normDoc2 = 0;
+        double multi = 0;
+
+        for (var word : bag.getWords()) {
+            double val1 = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
+            double val2 = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
+
+            freq = bow1.getNumberOfOccurrences(word) + bow2.getNumberOfOccurrences(word);
+            IDF = Math.log10(2.0 / freq);
+
+            val1 *= IDF;
+            val2 *= IDF;
+
+            multi += val1 * val2;
+            normDoc1 += val1 * val1;
+            normDoc2 += val2 * val2;
         }
+        normDoc1 = Math.sqrt(normDoc1);
+        normDoc2 = Math.sqrt(normDoc2);
 
-        // Return the final rank
-        return rank;
+        if (normDoc1 * normDoc2 == 0)
+            return 0;
+
+        return multi / (normDoc1 * normDoc2);
     }
 
     /***
@@ -189,35 +213,27 @@ public class Index implements IIndex {
         bag.addAllWords(bow1);
         bag.addAllWords(bow2);
 
-        int freq;
-        double IDF;
-
         double normDoc1 = 0;
         double normDoc2 = 0;
         double multi = 0;
 
-        // Calculate cosine similarity by the formula https://en.wikipedia.org/wiki/Cosine_similarity
         for (var word : bag.getWords()) {
-            double val1 = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
-            double val2 = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
-
-            freq = bow1.getNumberOfOccurrences(word) + bow2.getNumberOfOccurrences(word);
-            IDF = Math.log10(2.0 / freq);
-
-            val1 *= IDF;
-            val2 *= IDF;
+            double val1 = bow1.getNumberOfOccurrences(word);
+            double val2 = bow2.getNumberOfOccurrences(word);
 
             multi += val1 * val2;
             normDoc1 += val1 * val1;
             normDoc2 += val2 * val2;
+
+            index++;
         }
         normDoc1 = Math.sqrt(normDoc1);
         normDoc2 = Math.sqrt(normDoc2);
 
         if (normDoc1 * normDoc2 == 0)
             return 0;
-
         return multi / (normDoc1 * normDoc2);
+
     }
 
     /***
