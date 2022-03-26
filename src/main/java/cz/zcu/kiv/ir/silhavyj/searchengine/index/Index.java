@@ -161,9 +161,6 @@ public class Index implements IIndex {
         bag.addAllWords(bow1);
         bag.addAllWords(bow2);
 
-        int freq;
-        double IDF;
-
         double normDoc1 = 0;
         double normDoc2 = 0;
         double multi = 0;
@@ -172,8 +169,14 @@ public class Index implements IIndex {
             double val1 = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
             double val2 = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
 
-            freq = bow1.getNumberOfOccurrences(word) + bow2.getNumberOfOccurrences(word);
-            IDF = Math.log10(2.0 / freq);
+            // int freq = bow1.getNumberOfOccurrences(word) + bow2.getNumberOfOccurrences(word);
+            // double IDF = Math.log10(2.0 / freq);
+
+            final String preprocessedWord = preprocessor.preprocess(word);
+            double IDF = 0;
+            if (invertedIndex.containsKey(preprocessedWord)) {
+                IDF = Math.log10(getDocumentCount() / invertedIndex.get(preprocessedWord).getCount());
+            }
 
             val1 *= IDF;
             val2 *= IDF;
