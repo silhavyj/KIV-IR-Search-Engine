@@ -175,7 +175,7 @@ public class Index implements IIndex {
             final String preprocessedWord = preprocessor.preprocess(word);
             double IDF = 0;
             if (invertedIndex.containsKey(preprocessedWord)) {
-                IDF = Math.log10(getDocumentCount() / invertedIndex.get(preprocessedWord).getCount());
+                IDF = Math.log10((double)getDocumentCount() / invertedIndex.get(preprocessedWord).getCount());
             }
 
             val1 *= IDF;
