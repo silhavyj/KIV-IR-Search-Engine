@@ -166,11 +166,8 @@ public class Index implements IIndex {
         double multi = 0;
 
         for (var word : bag.getWords()) {
-            double val1 = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
-            double val2 = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfUniqueWords();
-
-            // int freq = bow1.getNumberOfOccurrences(word) + bow2.getNumberOfOccurrences(word);
-            // double IDF = Math.log10(2.0 / freq);
+            double val1 = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfWords();
+            double val2 = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfWords();
 
             final String preprocessedWord = preprocessor.preprocess(word);
             double IDF = 0;
