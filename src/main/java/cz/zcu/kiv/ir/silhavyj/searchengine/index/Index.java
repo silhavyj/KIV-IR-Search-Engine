@@ -177,8 +177,8 @@ public class Index implements IIndex {
                 w2 = 1 + Math.log10(bow2.getNumberOfOccurrences(word));
             }
 
-            double val1 = w1 / bag.getNumberOfWords();
-            double val2 = w2 / bag.getNumberOfWords();
+            double val1 = w1 / bag.getNumberOfUniqueWords();
+            double val2 = w2 / bag.getNumberOfUniqueWords();
 
             if (invertedIndex.containsKey(word)) {
                 IDF = Math.log10((double)getDocumentCount() / invertedIndex.get(word).getCount());

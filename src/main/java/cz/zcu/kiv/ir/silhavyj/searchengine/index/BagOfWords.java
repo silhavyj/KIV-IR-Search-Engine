@@ -13,15 +13,11 @@ public class BagOfWords {
     /*** Dictionary of terms occurring in a document. */
     private final Map<String, Integer> words;
 
-    /*** Total number of words held in the class. */
-    private int numberOfWords;
-
     /***
      * Creates an instance of the class.
      */
     public BagOfWords() {
         words = new HashMap<>();
-        numberOfWords = 0;
     }
 
     /***
@@ -57,7 +53,6 @@ public class BagOfWords {
      */
     public void addWord(String word, int count) {
         words.put(word, words.getOrDefault(word, 0) + count);
-        numberOfWords += count;
     }
 
     /***
@@ -69,11 +64,11 @@ public class BagOfWords {
     }
 
     /***
-     * Returns the total number of words stored in the bow.
-     * @return total number of words
+     * Returns the number of unique words (terms) of a document.
+     * @return number of unique words
      */
-    public int getNumberOfWords() {
-        return numberOfWords;
+    public int getNumberOfUniqueWords() {
+        return words.size();
     }
 
     /***
