@@ -80,4 +80,14 @@ public class EnglishPreprocessor implements IPreprocessor {
     public String preprocess(final String token) {
         return stemmer.stem(token.toLowerCase());
     }
+
+    /***
+     * Returns whether a word is a stopword or not
+     * @param token word
+     * @return True if the word is a stopword. False, otherwise.
+     */
+    @Override
+    public boolean isStopWord(String token) {
+        return stopWords.contains(token);
+    }
 }

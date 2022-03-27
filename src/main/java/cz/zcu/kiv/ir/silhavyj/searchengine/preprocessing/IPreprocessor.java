@@ -24,4 +24,11 @@ public interface IPreprocessor {
      * @return preprocessed token (term)
      */
     String preprocess(final String token);
+
+    /***
+     * Returns whether a word is a stopword or not
+     * @param token word
+     * @return True if the word is a stopword. False, otherwise.
+     */
+    boolean isStopWord(final String token);
 }

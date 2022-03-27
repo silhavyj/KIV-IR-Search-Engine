@@ -166,13 +166,22 @@ public class Index implements IIndex {
         double multi = 0;
 
         for (var word : bag.getWords()) {
-            double val1 = (double)bow1.getNumberOfOccurrences(word) / bag.getNumberOfWords();
-            double val2 = (double)bow2.getNumberOfOccurrences(word) / bag.getNumberOfWords();
-
-            final String preprocessedWord = preprocessor.preprocess(word);
             double IDF = 0;
-            if (invertedIndex.containsKey(preprocessedWord)) {
-                IDF = Math.log10((double)getDocumentCount() / invertedIndex.get(preprocessedWord).getCount());
+            double w1 = 0;
+            double w2 = 0;
+
+            if (bow1.contains(word)) {
+                w1 = 1 + Math.log10(bow1.getNumberOfOccurrences(word));
+            }
+            if (bow2.contains(word)) {
+                w2 = 1 + Math.log10(bow2.getNumberOfOccurrences(word));
+            }
+
+            double val1 = w1 / bag.getNumberOfWords();
+            double val2 = w2 / bag.getNumberOfWords();
+
+            if (invertedIndex.containsKey(word)) {
+                IDF = Math.log10((double)getDocumentCount() / invertedIndex.get(word).getCount());
             }
 
             val1 *= IDF;

@@ -77,11 +77,12 @@ public class BagOfWords {
     }
 
     /***
-     * Returns the number of unique words (terms) of a document.
-     * @return number of unique words
+     * Returns whether a word exists in the collection or not.
+     * @param word the word we're interested in
+     * @return True, the word exists. False, otherwise.
      */
-    public int getNumberOfUniqueWords() {
-        return words.size();
+    public boolean contains(final String word) {
+        return words.containsKey(word);
     }
 
     /***

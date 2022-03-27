@@ -638,7 +638,9 @@ public class MainController implements Initializable {
             final var relevantWords = queryParser.getRelevantWords();
             final Set<String> relevantTerms = new HashSet<>();
             for (final var word : relevantWords) {
-                relevantTerms.add(index.getPreprocessor().preprocess(word));
+                if (!index.getPreprocessor().isStopWord(word)) {
+                    relevantTerms.add(index.getPreprocessor().preprocess(word));
+                }
             }
 
             // Rank the document (TF-IDF, cosine similarity, or None)

@@ -560,6 +560,16 @@ public class CzechPreprocessor implements IPreprocessor {
         result = result.replaceAll("[^\\p{ASCII}]", "");
         return result;
     }
+
+    /***
+     * Returns whether a word is a stopword or not
+     * @param token word
+     * @return True if the word is a stopword. False, otherwise.
+     */
+    @Override
+    public boolean isStopWord(String token) {
+        return stopWords.contains(token);
+    }
 }
 
 
